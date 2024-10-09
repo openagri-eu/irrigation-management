@@ -9,7 +9,8 @@ from models import Dataset
 from crud import get_datasets, add_dataset, delete_datasets
 from utils import (min_max_date, detect_irrigation_events, count_precipitation_events,
                    count_high_dose_irrigation_events, get_high_dose_irrigation_events_dates, calculate_field_capacity,
-                   calculate_stress_level, get_stress_count, get_stress_dates)
+                   calculate_stress_level, get_stress_count, get_stress_dates,
+                   no_of_saturation_days, get_saturation_dates)
 
 Dataset.metadata.create_all(bind=engine)
 
@@ -60,8 +61,8 @@ def analyse_soil_moisture(dataset_id: int, db: Session = Depends(get_db)) -> Dat
     result.field_capacity = field_capacity
     stress_level = calculate_stress_level(field_capacity)
     result.stress_level = stress_level
-    result.number_of_saturation_days = None # TODO
-    result.saturation_dates = None # TODO
+    result.number_of_saturation_days = no_of_saturation_days(dataset, field_capacity)
+    result.saturation_dates = get_saturation_dates(dataset, field_capacity)
     result.no_of_stress_days = get_stress_count(dataset, stress_level)
     result.stress_dates = get_stress_dates(dataset, stress_level)
 

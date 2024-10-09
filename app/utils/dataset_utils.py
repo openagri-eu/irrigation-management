@@ -176,6 +176,36 @@ def calculate_stress_level(field_capacity_values):
     return stress_level_tuples
 
 
+def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values):
+    number_of_saturation_days = 0
+
+    field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
+    # TODO: check threshold
+    for day in dataset:
+        if (day.soil_moisture_10 >= field_capacity_dict[10] * 0.9 or
+                day.soil_moisture_20 >= field_capacity_dict[20] * 0.9 or
+                day.soil_moisture_30 >= field_capacity_dict[30] * 0.9 or
+                day.soil_moisture_40 >= field_capacity_dict[40] * 0.9):
+            number_of_saturation_days +=1
+
+    return number_of_saturation_days
+
+
+def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values):
+    saturation_days = []
+
+    field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
+
+    for day in dataset:
+        if (day.soil_moisture_10 >= field_capacity_dict[10] * 0.9 or
+                day.soil_moisture_20 >= field_capacity_dict[20] * 0.9 or
+                day.soil_moisture_30 >= field_capacity_dict[30] * 0.9 or
+                day.soil_moisture_40 >= field_capacity_dict[40] * 0.9):
+            saturation_days.append(day.date)
+
+    return saturation_days
+
+
 def get_stress_count(dataset: list[DatasetScheme], stress_level: list[[int, float]]):
     stress_ret = 0
 
