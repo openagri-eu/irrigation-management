@@ -43,9 +43,20 @@ Examples:
 <h3>POST</h3>
 /api/v1/eto/
 
+<h3>POST/GET/DELETE</h3>
+/api/v1/dataset/{dataset_id}
+
+<h3>GET</h3>
+/api/v1/dataset/{dataset_id}/analysis
+
 <h3> Example usage </h3>
 
 In order to use the aforementioned API, you need to fill out the input parameters corresponding to the requested ETO calculation.
+
+Use POST /api/v1/dataset/{dataset_id} to upload your data to the database.
+GET and DELETE requests with the same URL as previously mentioned are for fetching and deleting data from database, respectively.
+
+For obtaining analysis of soil moisture, use GET /api/v1/dataset/{dataset_id}/analysis request. 
 
 # Contribution
 Please contact the maintainer of this repository
