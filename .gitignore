@@ -163,3 +163,5 @@ cython_debug/
 
 /alembic
 alembic.ini
+
+app/sql_app.db
