@@ -49,6 +49,10 @@ def remove_dataset(dataset_id: int, db: Session = Depends(get_db)):
 @router.get("/{dataset_id}/analysis")
 def analyse_soil_moisture(dataset_id: int, db: Session = Depends(get_db)) -> DatasetAnalysis:
     dataset: list[DatasetScheme] = get_datasets(db, dataset_id)
+
+    if not dataset:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
     result = DatasetAnalysis
 
     result.dataset_id = dataset_id
