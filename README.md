@@ -44,6 +44,7 @@ Examples:
 /api/v1/eto/
 
 <h3>GET/DELETE</h3>
+
 ```
 /api/v1/dataset/{dataset_id}
 ```
@@ -76,6 +77,7 @@ Example responses for GET and DELETE respectively:
 ```
 
 <h3>POST</h3>
+
 ```
 /api/v1/dataset/
 ```
@@ -98,6 +100,7 @@ Example response:
 ```
 
 <h3>GET</h3>
+
 ```
 /api/v1/dataset/{dataset_id}/analysis
 ```
