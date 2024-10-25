@@ -78,6 +78,10 @@ Example responses for GET and DELETE respectively:
 
 <h3>POST</h3>
 
+```
+/api/v1/dataset/
+```
+
 Input JSON:
 
 ```json
