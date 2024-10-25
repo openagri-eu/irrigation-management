@@ -30,6 +30,8 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")
     """
+
+    SQLALCHEMY_DATABASE_URL: str = "sqlite:///./sql_app.db"
     CONST_THRESHOLD: float=0.01
     INCREASE_THRESHOLD: float=0.05
     HIGH_DOSE_THRESHOLD: float=0.1

@@ -16,6 +16,7 @@ from core import Settings, get_settings
 
 router = APIRouter()
 
+
 @router.post("/")
 def load_dataset(dataset: DatasetScheme, db: Session = Depends(get_db)) -> DatasetScheme:
     return add_dataset(db, dataset)
@@ -28,6 +29,7 @@ async def get_dataset(dataset_id: int, db: Session = Depends(get_db)) -> list[Da
         raise HTTPException(status_code=404, detail="No datasets with that id")
     return db_dataset
 
+
 @router.delete("/{dataset_id}")
 def remove_dataset(dataset_id: int, db: Session = Depends(get_db)):
     try:
@@ -38,6 +40,7 @@ def remove_dataset(dataset_id: int, db: Session = Depends(get_db)):
     if deleted == 0:
         raise HTTPException(status_code=400, detail="No dataset with given id")
     return {"status_code":201, "detail": "Successfully deleted"}
+
 
 @router.get("/{dataset_id}/analysis")
 def analyse_soil_moisture(dataset_id: int, db: Session = Depends(get_db),
