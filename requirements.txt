@@ -5,3 +5,4 @@ psycopg2-binary==2.9.9 # PSQL driver
 pydantic-settings==2.2.1 # Pydantic settings options [donated to the python-org, not part of the main package anymore]
 PyJWT==2.8.0 # Instead of jose (has a CVE)
 ETo==1.1.0
+python-dotenv==1.0.1

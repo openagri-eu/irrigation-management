@@ -1,11 +1,11 @@
 from typing import Optional, Any
 from pydantic import field_validator
 from pydantic_settings import SettingsConfigDict, BaseSettings
-from os import path
+from functools import lru_cache
 
 
 class Settings(BaseSettings):
-
+    """
     PROJECT_ROOT: str = path.dirname(path.dirname(path.realpath(__file__)))
 
     POSTGRES_SERVER: str
@@ -29,6 +29,20 @@ class Settings(BaseSettings):
         return url
 
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")
+    """
+    CONST_THRESHOLD: float=0.01
+    INCREASE_THRESHOLD: float=0.05
+    HIGH_DOSE_THRESHOLD: float=0.1
+    SATURATION_THRESHOLD: float=0.9
+
+    class Config:
+        env_file = "../../.env.irrigation"
+        env_file_encoding = 'utf-8'
 
 
 settings = Settings()
+
+
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()

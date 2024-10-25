@@ -1,14 +1,20 @@
 from schemas import Dataset as DatasetScheme
 
-def min_max_date(dataset: list[DatasetScheme]):
+from datetime import datetime
+
+from core import Settings
+
+
+def min_max_date(dataset: list[DatasetScheme]) -> [datetime, datetime]:
     min_date = min(dataset, key=lambda d: d.date)
     max_date = max(dataset, key=lambda d: d.date)
     return [min_date, max_date]
 
 
-def detect_irrigation_events(dataset: list[DatasetScheme]):
-    const_threshold = 0.01
-    increase_threshold = 0.05
+def detect_irrigation_events(dataset: list[DatasetScheme],
+                             settings: Settings):
+    const_threshold = settings.CONST_THRESHOLD
+    increase_threshold = settings.INCREASE_THRESHOLD
     const_time = 4
     events = 0
     sorted_dataset = sorted(dataset, key=lambda d: d.date)
@@ -44,8 +50,8 @@ def detect_irrigation_events(dataset: list[DatasetScheme]):
     return events
 
 
-def count_precipitation_events(dataset: list[DatasetScheme]):
-    increase_threshold = 0.05
+def count_precipitation_events(dataset: list[DatasetScheme], settings: Settings):
+    increase_threshold = settings.INCREASE_THRESHOLD
     sorted_dataset = sorted(dataset, key=lambda d: d.date)
 
     event_count = 0
@@ -82,9 +88,9 @@ def count_precipitation_events(dataset: list[DatasetScheme]):
     return event_count
 
 
-def count_high_dose_irrigation_events(dataset: list[DatasetScheme]):
-    # TODO: check with the team
-    high_dose_threshold = 0.10
+def count_high_dose_irrigation_events(dataset: list[DatasetScheme], settings: Settings):
+
+    high_dose_threshold = settings.HIGH_DOSE_THRESHOLD
 
     sorted_dataset = sorted(dataset, key=lambda d: d.date)
 
@@ -107,9 +113,9 @@ def count_high_dose_irrigation_events(dataset: list[DatasetScheme]):
     return irrigation_event_count
 
 
-def get_high_dose_irrigation_events_dates(dataset: list[DatasetScheme]):
-    # TODO: check with the team
-    high_dose_threshold = 0.10
+def get_high_dose_irrigation_events_dates(dataset: list[DatasetScheme], settings: Settings):
+
+    high_dose_threshold = settings.HIGH_DOSE_THRESHOLD
 
     sorted_dataset = sorted(dataset, key=lambda d: d.date)
 
@@ -176,31 +182,35 @@ def calculate_stress_level(field_capacity_values):
     return stress_level_tuples
 
 
-def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values):
+def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values, settings: Settings):
     number_of_saturation_days = 0
 
     field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
-    # TODO: check threshold
+
+    saturation_threshold = settings.SATURATION_THRESHOLD
+
     for day in dataset:
-        if (day.soil_moisture_10 >= field_capacity_dict[10] * 0.9 or
-                day.soil_moisture_20 >= field_capacity_dict[20] * 0.9 or
-                day.soil_moisture_30 >= field_capacity_dict[30] * 0.9 or
-                day.soil_moisture_40 >= field_capacity_dict[40] * 0.9):
+        if (day.soil_moisture_10 >= field_capacity_dict[10] * saturation_threshold or
+                day.soil_moisture_20 >= field_capacity_dict[20] * saturation_threshold or
+                day.soil_moisture_30 >= field_capacity_dict[30] * saturation_threshold or
+                day.soil_moisture_40 >= field_capacity_dict[40] * saturation_threshold):
             number_of_saturation_days +=1
 
     return number_of_saturation_days
 
 
-def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values):
+def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values, settings: Settings):
     saturation_days = []
 
     field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
 
+    saturation_threshold = settings.SATURATION_THRESHOLD
+
     for day in dataset:
-        if (day.soil_moisture_10 >= field_capacity_dict[10] * 0.9 or
-                day.soil_moisture_20 >= field_capacity_dict[20] * 0.9 or
-                day.soil_moisture_30 >= field_capacity_dict[30] * 0.9 or
-                day.soil_moisture_40 >= field_capacity_dict[40] * 0.9):
+        if (day.soil_moisture_10 >= field_capacity_dict[10] * saturation_threshold or
+                day.soil_moisture_20 >= field_capacity_dict[20] * saturation_threshold or
+                day.soil_moisture_30 >= field_capacity_dict[30] * saturation_threshold or
+                day.soil_moisture_40 >= field_capacity_dict[40] * saturation_threshold):
             saturation_days.append(day.date)
 
     return saturation_days
