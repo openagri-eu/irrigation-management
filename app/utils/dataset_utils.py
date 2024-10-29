@@ -4,13 +4,20 @@ from datetime import datetime
 
 from core import Settings
 
-
+"""
+Return time period covered.
+"""
 def min_max_date(dataset: list[DatasetScheme]) -> [datetime, datetime]:
     min_date = min(dataset, key=lambda d: d.date)
     max_date = max(dataset, key=lambda d: d.date)
     return [min_date, max_date]
 
 
+"""
+With two thresholds we detect irrigation events.
+First thresholds checks the moisture white the second one checks if there was increase.
+Also takes into account if there was not rain.
+"""
 def detect_irrigation_events(dataset: list[DatasetScheme],
                              settings: Settings):
     const_threshold = settings.CONST_THRESHOLD
@@ -49,7 +56,9 @@ def detect_irrigation_events(dataset: list[DatasetScheme],
 
     return events
 
-
+"""
+Similar to previous one, only this time counts number of irrigation events.
+"""
 def count_precipitation_events(dataset: list[DatasetScheme], settings: Settings):
     increase_threshold = settings.INCREASE_THRESHOLD
     sorted_dataset = sorted(dataset, key=lambda d: d.date)
@@ -87,7 +96,9 @@ def count_precipitation_events(dataset: list[DatasetScheme], settings: Settings)
 
     return event_count
 
-
+"""
+This time we count those events with "higher" threshold.
+"""
 def count_high_dose_irrigation_events(dataset: list[DatasetScheme], settings: Settings):
 
     high_dose_threshold = settings.HIGH_DOSE_THRESHOLD
@@ -112,7 +123,9 @@ def count_high_dose_irrigation_events(dataset: list[DatasetScheme], settings: Se
 
     return irrigation_event_count
 
-
+"""
+Like we count those high dose irrigation, we also collect dates when they occur. 
+"""
 def get_high_dose_irrigation_events_dates(dataset: list[DatasetScheme], settings: Settings):
 
     high_dose_threshold = settings.HIGH_DOSE_THRESHOLD
@@ -136,7 +149,9 @@ def get_high_dose_irrigation_events_dates(dataset: list[DatasetScheme], settings
 
     return event_dates
 
-
+"""
+Creates Map data structure where keys are depth and values are maximum capacity for that depth.
+"""
 def calculate_field_capacity(dataset: list[DatasetScheme]):
     sorted_dataset = sorted(dataset, key=lambda x: x.date)
 
@@ -175,13 +190,17 @@ def calculate_field_capacity(dataset: list[DatasetScheme]):
 
     return field_capacity_tuples
 
-
+"""
+Similar to previous one, but this time we check if values in the Map data structure are below 25%.
+"""
 def calculate_stress_level(field_capacity_values):
     stress_level_tuples = [(depth, f"{float(value[:-1]) * 0.25}") for depth, value in field_capacity_values]
 
     return stress_level_tuples
 
-
+"""
+With the given threshold we get number of saturation days in the field. 
+"""
 def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values, settings: Settings):
     number_of_saturation_days = 0
 
@@ -199,6 +218,9 @@ def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values, s
     return number_of_saturation_days
 
 
+"""
+Same as previous one, only this time it return list of dates when such an events occurs.
+"""
 def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values, settings: Settings):
     saturation_days = []
 
@@ -216,6 +238,9 @@ def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values, se
     return saturation_days
 
 
+"""
+With the given stress levels, in this function we count how many this events occurs.
+"""
 def get_stress_count(dataset: list[DatasetScheme], stress_level: list[[int, float]]):
     stress_ret = 0
 
@@ -230,7 +255,9 @@ def get_stress_count(dataset: list[DatasetScheme], stress_level: list[[int, floa
 
     return stress_ret
 
-
+"""
+As previous, but now we also want to get dates for those stress points events.
+"""
 def get_stress_dates(dataset: list[DatasetScheme], stress_level: list[[int, float]]):
     stress_dates = []
 
