@@ -1,0 +1,36 @@
+services:
+  db:
+    hostname: ${POSTGRES_HOST}
+    image: postgres:16.3
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGPORT: ${POSTGRES_PORT}
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      start_period: 10s
+      retries: 3
+      interval: 360s
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+    image: ghcr.io/openagri-eu/irrigation-management:latest
+    build: .
+    command: /code/entrypoint.sh
+    ports:
+      - "80:80"
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      ACCESS_TOKEN_EXPIRATION_TIME: ${ACCESS_TOKEN_EXPIRATION_TIME}
+      JWT_KEY: ${JWT_KEY}
+      OWM_API_KEY: ${OWM_API_KEY}
+      CONST_THRESHOLD: ${CONST_THRESHOLD}
+      INCREASE_THRESHOLD: ${INCREASE_THRESHOLD}
+      HIGH_DOSE_THRESHOLD: ${HIGH_DOSE_THRESHOLD}
+      SATURATION_THRESHOLD: ${SATURATION_THRESHOLD}
