@@ -40,13 +40,14 @@ jobstores = {
 scheduler = AsyncIOScheduler(jobstores=jobstores)
 
 
-@scheduler.scheduled_job('cron', day_of_week='mon-sun', hour=23, minute=55, second=0)
+@scheduler.scheduled_job('cron', day_of_week='*', hour=23, minute=55, second=0)
 def get_owm_data():
     session = db.session.SessionLocal()
 
     locations = session.query(Location).all()
 
     if len(locations) == 0:
+        session.close()
         return
 
     lat_lon_values = []
@@ -84,6 +85,7 @@ def get_owm_data():
         lat_lon_values.append((loc ,body[0]["lat"], body[0]["lon"]))
 
     if len(lat_lon_values) == 0:
+        session.close()
         return
 
     weather_info = []
