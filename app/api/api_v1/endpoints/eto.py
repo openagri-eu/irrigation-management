@@ -1,29 +1,46 @@
-from fastapi import APIRouter
-from eto import ETo, datasets
-import pandas as pd
-from schemas import InputParams
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from api import deps
+import crud
+
+from models import User
+from schemas import EToRequest, EToResponse
 
 
 router = APIRouter()
 
 
-@router.post("/")
-def calculate(
-    ip: InputParams
+@router.post("/get-calculations/{location_id}", response_model=EToResponse)
+def get_calculations(
+    location_id: int,
+    er: EToRequest,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
 ):
     """
-    Calculate the Reference evapotranspiration (ETo) according to FAO standards.
+    Returns ETo calculations for the requested days
     """
 
-    et = ETo()
+    if er.from_date > er.to_date:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, from date can't be later than to date"
+        )
 
-    # The test data in question
-    example = datasets.get_path('example_daily')
-    tsdata = pd.read_csv(example, parse_dates=True, infer_datetime_format=True, index_col='date')
+    location_db = crud.location.get(db=db, id=location_id)
 
-    et.param_est(tsdata, ip.freq, ip.z_msl, ip.lat, ip.lon, ip.tz_lon)
-    et.ts_param.head()
+    if location_db is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, location with ID:{} does not exist.".format(location_id)
+        )
 
-    eto1 = et.eto_fao()
-
-    return eto1.to_json()
+    return EToResponse(
+        calculations=crud.eto.get_calculations(
+            db=db,
+            from_date=er.from_date,
+            to_date=er.to_date,
+            location_id=location_id
+        )
+    )
