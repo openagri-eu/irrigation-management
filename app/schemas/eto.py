@@ -1,9 +1,43 @@
-from pydantic import BaseModel
+import datetime
+from typing import List
+
+from pydantic import BaseModel, ConfigDict
 
 
-class InputParams(BaseModel):
-    z_msl: int = 500
-    lat: float = -43.6
-    lon: int = 172
-    tz_lon: int = 173
-    freq: str = 'D'
+class EToRequest(BaseModel):
+    from_date: datetime.date
+    to_date: datetime.date
+
+
+class Calculation(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    date: datetime.date
+    value: float
+
+
+class EToResponse(BaseModel):
+    calculations: List[Calculation] = []
+
+
+
+class EToInputData(BaseModel):
+    t_min: float
+    t_max: float
+    t_mean: float
+    rh_mean: float
+    u_z: float
+    p: float
+
+    sea_level: int
+
+
+class EtoCreate(BaseModel):
+    date: datetime.date
+    value: float
+
+    location_id: int
+
+
+class EtoUpdate(BaseModel):
+    pass
