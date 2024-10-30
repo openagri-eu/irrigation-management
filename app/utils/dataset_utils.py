@@ -2,7 +2,16 @@ from schemas import Dataset as DatasetScheme
 
 from datetime import datetime
 
-from core import Settings
+from core import get_settings
+
+settings = get_settings()
+
+"""
+INPUT PARAMETER: dataset: list[DatasetScheme] in functions refers to mapping of .csv file into list of it's rows
+i.e., DatasetScheme is one row of that same file. 
+Check issue #7: https://github.com/openagri-eu/irrigation-management/issues/7
+
+"""
 
 """
 Return time period covered.
@@ -15,11 +24,10 @@ def min_max_date(dataset: list[DatasetScheme]) -> [datetime, datetime]:
 
 """
 With two thresholds we detect irrigation events.
-First thresholds checks the moisture white the second one checks if there was increase.
+First thresholds checks the moisture while the second one checks if there was increase.
 Also takes into account if there was not rain.
 """
-def detect_irrigation_events(dataset: list[DatasetScheme],
-                             settings: Settings):
+def detect_irrigation_events(dataset: list[DatasetScheme]):
     const_threshold = settings.CONST_THRESHOLD
     increase_threshold = settings.INCREASE_THRESHOLD
     const_time = 4
@@ -59,7 +67,7 @@ def detect_irrigation_events(dataset: list[DatasetScheme],
 """
 Similar to previous one, only this time counts number of irrigation events.
 """
-def count_precipitation_events(dataset: list[DatasetScheme], settings: Settings):
+def count_precipitation_events(dataset: list[DatasetScheme]):
     increase_threshold = settings.INCREASE_THRESHOLD
     sorted_dataset = sorted(dataset, key=lambda d: d.date)
 
@@ -99,7 +107,7 @@ def count_precipitation_events(dataset: list[DatasetScheme], settings: Settings)
 """
 This time we count those events with "higher" threshold.
 """
-def count_high_dose_irrigation_events(dataset: list[DatasetScheme], settings: Settings):
+def count_high_dose_irrigation_events(dataset: list[DatasetScheme]):
 
     high_dose_threshold = settings.HIGH_DOSE_THRESHOLD
 
@@ -126,7 +134,7 @@ def count_high_dose_irrigation_events(dataset: list[DatasetScheme], settings: Se
 """
 Like we count those high dose irrigation, we also collect dates when they occur. 
 """
-def get_high_dose_irrigation_events_dates(dataset: list[DatasetScheme], settings: Settings):
+def get_high_dose_irrigation_events_dates(dataset: list[DatasetScheme]):
 
     high_dose_threshold = settings.HIGH_DOSE_THRESHOLD
 
@@ -199,9 +207,11 @@ def calculate_stress_level(field_capacity_values):
     return stress_level_tuples
 
 """
+INPUT field_capacity_values: Refers to maximum capacity for each depth.
+
 With the given threshold we get number of saturation days in the field. 
 """
-def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values, settings: Settings):
+def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values):
     number_of_saturation_days = 0
 
     field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
@@ -219,9 +229,11 @@ def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values, s
 
 
 """
+INPUT field_capacity_values: Refers to maximum capacity for each depth.
+
 Same as previous one, only this time it return list of dates when such an events occurs.
 """
-def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values, settings: Settings):
+def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values):
     saturation_days = []
 
     field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
