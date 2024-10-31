@@ -21,7 +21,7 @@ def get_owm_data():
 
     lat_lon_values = []
     for loc in locations:
-        if loc.state_code is not None:
+        if loc.state_code:
             try:
                 response = requests.get(
                     url="http://api.openweathermap.org/geo/1.0/direct?q={},{},{}&appid={}".format(loc.city_name,
