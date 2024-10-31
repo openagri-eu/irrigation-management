@@ -339,6 +339,25 @@ If a state from the USA was added:
 /api/v1/location/
 ```
 
+Input JSON:
+```
+{
+    "city_name": "Paris",
+    "state_code": Texas,
+    "country_code": "USA"
+}
+```
+
+or
+
+```
+{
+    "city_name": "Paris",
+    "country_code": "FR"
+}
+```
+
+
 Example response: Same as above
 
 <h3>DELETE</h3>
