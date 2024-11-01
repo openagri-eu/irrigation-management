@@ -49,24 +49,23 @@ Examples:
 
 Example response:
 
-```
+```json
 {
     "id": 1,
     "city_name": "Paris",
-    "state_code": none,
+    "state_code": null,
     "country_code": "FR"
 }
 ```
 If a state from the USA was added:
-```
+```json
 {
     "id": 1,
     "city_name": "Paris",
-    "state_code": Texas,
+    "state_code": "Texas",
     "country_code": "USA"
 }
 ```
-
 
 <h3>POST</h3>
 ```
@@ -74,17 +73,17 @@ If a state from the USA was added:
 ```
 
 Input JSON:
-```
+```json
 {
     "city_name": "Paris",
-    "state_code": Texas,
+    "state_code": "Texas",
     "country_code": "USA"
 }
 ```
 
 or
 
-```
+```json
 {
     "city_name": "Paris",
     "country_code": "FR"
@@ -98,7 +97,12 @@ Example response: Same as above
 /api/v1/location/{location_id}
 ```
 
-Example response: Same as above
+Example response:
+```json
+{
+    "message": "Successfully deleted location"
+}
+```
 
 <h3>POST</h3>
 ```
@@ -106,7 +110,7 @@ Example response: Same as above
 ```
 
 Input JSON:
-```
+```json
 {
     "from_date": "2024-10-25",
     "to_date": "2024-11-01"
@@ -115,7 +119,7 @@ Input JSON:
 
 Example response:
 
-```
+```json
 {
     "calculations": [
         {
@@ -225,7 +229,7 @@ Example response:
 ```
 
 Example response:
-```
+```json
 {
   "dataset_id": 23,
   "time_period": [
