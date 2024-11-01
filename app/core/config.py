@@ -1,50 +1,57 @@
-from typing import Optional, Any
-from pydantic import field_validator
-from pydantic_settings import SettingsConfigDict, BaseSettings
-from functools import lru_cache
+from typing import Optional, Any, List
+
+from password_validator import PasswordValidator
+from pydantic import field_validator, AnyHttpUrl
+from pydantic_settings import BaseSettings
+from os import path, environ
 
 
 class Settings(BaseSettings):
-    """
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+
     PROJECT_ROOT: str = path.dirname(path.dirname(path.realpath(__file__)))
 
-    POSTGRES_SERVER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
-    POSTGRES_DB_PORT: int
     POSTGRES_DB: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
 
     SQLALCHEMY_DATABASE_URI: Optional[str] = None
 
-    KEY: str = "27smVa9g6blmGY0_fJKvuG7elrQ6gapei2cJgaoAcskw"
-
     @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
-    def assemble_db_connection(self, v: Optional[str], values) -> Any:
+    def assemble_db_connection(cls, v: Optional[str], values) -> Any:
         if isinstance(v, str):
             return v
 
-        url = f'postgresql://{values.data.get("POSTGRES_USER")}:{values.data.get("POSTGRES_PASSWORD")}' \
-              f'@/{values.data.get("POSTGRES_DB")}?host=localhost'
+        url = "postgresql://{}:{}@{}:{}/{}".format(
+            environ.get("POSTGRES_USER"),
+            environ.get("POSTGRES_PASSWORD"),
+            environ.get("POSTGRES_HOST"),
+            environ.get("POSTGRES_PORT"),
+            environ.get("POSTGRES_DB")
+        )
 
         return url
 
-    model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")
-    """
+    PASSWORD_SCHEMA_OBJ: PasswordValidator = PasswordValidator()
+    PASSWORD_SCHEMA_OBJ \
+        .min(8) \
+        .max(100) \
+        .has().uppercase() \
+        .has().lowercase() \
+        .has().digits() \
+        .has().no().spaces() \
 
-    SQLALCHEMY_DATABASE_URL: str = "sqlite:///./sql_app.db"
-    CONST_THRESHOLD: float=0.01
-    INCREASE_THRESHOLD: float=0.05
-    HIGH_DOSE_THRESHOLD: float=0.1
-    SATURATION_THRESHOLD: float=0.9
+    ACCESS_TOKEN_EXPIRATION_TIME: int
+    JWT_KEY: str
 
-    class Config:
-        env_file = "../../.env.irrigation"
-        env_file_encoding = 'utf-8'
+    OWM_API_KEY: str
+
+    CONST_THRESHOLD: float
+    INCREASE_THRESHOLD: float
+    HIGH_DOSE_THRESHOLD: float
+    SATURATION_THRESHOLD: float
 
 
 settings = Settings()
-
-
-@lru_cache()
-def get_settings() -> Settings:
-    return Settings()

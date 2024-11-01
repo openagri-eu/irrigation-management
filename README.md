@@ -206,7 +206,6 @@ Input JSON:
    "temperature": 22.3,
    "humidity": 66.33
 }
-
 ```
 
 ```

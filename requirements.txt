@@ -1,8 +1,13 @@
 fastapi==0.111.0
 alembic==1.13.1 # DB migrations
 requests==2.32.3 # Readable HTTP
-psycopg2-binary==2.9.9 # PSQL driver
+psycopg2==2.9.9 # PSQL driver
 pydantic-settings==2.2.1 # Pydantic settings options [donated to the python-org, not part of the main package anymore]
 PyJWT==2.8.0 # Instead of jose (has a CVE)
 ETo==1.1.0
+APScheduler==3.10.4
+password-validator==1.0 # Enforceable rules for passwords
+passlib==1.7.4 # For password managment
+argon2_cffi==23.1.0 # Backend for Argon encryption
+pandas==2.2.3 # Don't update to 3.0.0 because the ETo lib will stop working
 python-dotenv==1.0.1

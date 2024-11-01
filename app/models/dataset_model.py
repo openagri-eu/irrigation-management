@@ -1,17 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Column, Integer, Float, Date
 
-from typing import Any
-
-
-class Base(DeclarativeBase):
-    id: Any
-    __name__: str
-
-    @declared_attr
-    def __tablename__(cls) -> str:
-        return cls.__name__.lower()
+from db.base_class import Base
 
 
 class Dataset(Base):
@@ -19,7 +8,7 @@ class Dataset(Base):
 
     id = Column(Integer, primary_key=True)
     dataset_id = Column(Integer)
-    date = Column(String)
+    date = Column(Date)
     soil_moisture_10 = Column(Float)
     soil_moisture_20 = Column(Float)
     soil_moisture_30 = Column(Float)
