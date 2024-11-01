@@ -43,6 +43,7 @@ The application will be served on http://127.0.0.1:80 (I.E. typing localhost/doc
 Examples:
 
 <h3>GET</h3>
+
 ```
 /api/v1/location/{location_id}
 ```
@@ -57,7 +58,9 @@ Example response:
     "country_code": "FR"
 }
 ```
+
 If a state from the USA was added:
+
 ```json
 {
     "id": 1,
@@ -68,11 +71,13 @@ If a state from the USA was added:
 ```
 
 <h3>POST</h3>
+
 ```
 /api/v1/location/
 ```
 
 Input JSON:
+
 ```json
 {
     "city_name": "Paris",
@@ -93,11 +98,13 @@ or
 Example response: Same as above
 
 <h3>DELETE</h3>
+
 ```
 /api/v1/location/{location_id}
 ```
 
 Example response:
+
 ```json
 {
     "message": "Successfully deleted location"
@@ -110,6 +117,7 @@ Example response:
 ```
 
 Input JSON:
+
 ```json
 {
     "from_date": "2024-10-25",
