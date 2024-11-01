@@ -2,21 +2,22 @@
 
 # Description
 
-The Irrigation service takes in data via datasets and \
-returns the results of the ETo or soil moisture analysis
+The Irrigation service provides information via It's APIs, either in the form of \
+ETo (Reference evapotranspiration) calculations or soil moisture analysis.
 
 # Requirements
 
 <ul>
     <li>git</li>
     <li>docker</li>
+    <li>docker-compose</li>
 </ul>
 
 Docker version used during development: 27.0.3
 
 # Installation
 
-There are two ways to install this service, via docker or directly from source.
+There are two ways to install this service, via docker (preferred) or directly from source.
 
 <h3> Deploying from source </h3>
 
@@ -24,15 +25,15 @@ When deploying from source, use python 3:11.\
 Also, you should use a [venv](https://peps.python.org/pep-0405/) when doing this.
 
 A list of libraries that are required for this service is present in the "requirements.txt" file.\
-This service uses FastAPI as a web framework to serve APIs, alembic for database migrations sqlalchemy for database ORM mapping.
+This service uses FastAPI as a web framework to serve APIs, alembic for database migrations and sqlalchemy for database ORM mapping.
 
 <h3> Deploying via docker </h3>
 
-After installing <code> docker </code> you can run the following commands to run the application in detached mode:
+After installing <code>docker-compose</code> you can run the following commands to run the application:
 
 ```
-docker build -t irrigation .
-docker run -d --name irrigation -p 80:80 irrigation
+docker compose build
+docker compose up
 ```
 
 The application will be served on http://127.0.0.1:80 (I.E. typing localhost/docs in your browser will load the swagger documentation)
@@ -42,7 +43,6 @@ The application will be served on http://127.0.0.1:80 (I.E. typing localhost/doc
 Examples:
 
 <h3>GET</h3>
-
 ```
 /api/v1/location/{location_id}
 ```
@@ -57,9 +57,7 @@ Example response:
     "country_code": "FR"
 }
 ```
-
 If a state from the USA was added:
-
 ```
 {
     "id": 1,
@@ -71,13 +69,11 @@ If a state from the USA was added:
 
 
 <h3>POST</h3>
-
 ```
 /api/v1/location/
 ```
 
 Input JSON:
-
 ```
 {
     "city_name": "Paris",
@@ -95,11 +91,9 @@ or
 }
 ```
 
-
 Example response: Same as above
 
 <h3>DELETE</h3>
-
 ```
 /api/v1/location/{location_id}
 ```
@@ -107,12 +101,19 @@ Example response: Same as above
 Example response: Same as above
 
 <h3>POST</h3>
-
 ```
 /api/v1/eto/get-calculations/{location_id}
 ```
 
-Example response: 
+Input JSON:
+```
+{
+    "from_date": "2024-10-25",
+    "to_date": "2024-11-01"
+}
+```
+
+Example response:
 
 ```
 {
@@ -136,7 +137,6 @@ Example response:
     ]
 }
 ```
-
 Values represent the calculated ETo values, which are represented in mm/day or millimetres per day
 
 <h3>GET/DELETE</h3>
@@ -225,7 +225,7 @@ Example response:
 ```
 
 Example response:
-```json
+```
 {
   "dataset_id": 23,
   "time_period": [
