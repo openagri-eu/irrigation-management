@@ -40,8 +40,104 @@ The application will be served on http://127.0.0.1:80 (I.E. typing localhost/doc
 # Documentation
 
 Examples:
+
+<h3>GET</h3>
+
+```
+/api/v1/location/{location_id}
+```
+
+Example response:
+
+```
+{
+    "id": 1,
+    "city_name": "Paris",
+    "state_code": none,
+    "country_code": "FR"
+}
+```
+
+If a state from the USA was added:
+
+```
+{
+    "id": 1,
+    "city_name": "Paris",
+    "state_code": Texas,
+    "country_code": "USA"
+}
+```
+
+
 <h3>POST</h3>
-/api/v1/eto/
+
+```
+/api/v1/location/
+```
+
+Input JSON:
+
+```
+{
+    "city_name": "Paris",
+    "state_code": Texas,
+    "country_code": "USA"
+}
+```
+
+or
+
+```
+{
+    "city_name": "Paris",
+    "country_code": "FR"
+}
+```
+
+
+Example response: Same as above
+
+<h3>DELETE</h3>
+
+```
+/api/v1/location/{location_id}
+```
+
+Example response: Same as above
+
+<h3>POST</h3>
+
+```
+/api/v1/eto/get-calculations/{location_id}
+```
+
+Example response: 
+
+```
+{
+    "calculations": [
+        {
+            "date": "2020-10-25",
+            "value": 6.55
+        },
+        {
+            "date": "2020-10-24",
+            "value": 6.45
+        },
+        {
+            "date": "2020-10-23",
+            "value": 6.52
+        },
+        {
+            "date": "2020-10-22",
+            "value": 5.87
+        }
+    ]
+}
+```
+
+Values represent the calculated ETo values, which are represented in mm/day or millimetres per day
 
 <h3>GET/DELETE</h3>
 
@@ -164,10 +260,17 @@ Example response:
 }
 ```
 
+<h3>Example usage for the ETo:</h3>
 
-<h3> Example usage </h3>
+A user would input the location of their parcel/plot of land via the POST /api/v1/location/ API (or multiple parcels). \
+The system requests weather data for these locations at around midnight every day. \
+Once a user wishes to view ETo values, they may call the POST /api/v1/eto/get-calculations/{location_id} API. \
+This API will return a list of calculations, for the given days.
 
-In order to use the aforementioned API, you need to fill out the input parameters corresponding to the requested ETO calculation.
+Currently, because the service only starts collecting data once it has been deployed, it is not possible to \
+query for ETo values for days before it has been deployed. 
+
+<h3>Example usage for the soil moisture analysis:</h3>
 
 Use POST /api/v1/dataset/ to upload your data to the database.
 GET and DELETE requests with the same URL as previously mentioned are for fetching and deleting data from database, respectively.
