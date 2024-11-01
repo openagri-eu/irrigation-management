@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from api import deps
 from models import User
-from schemas import NewLocation, LocationResponseInformation
+from schemas import NewLocation, LocationResponseInformation, Message
 from crud import location
 
 router = APIRouter()
@@ -31,7 +31,7 @@ def add_location(
     return new_location
 
 
-@router.delete("/{location_id}", response_model=LocationResponseInformation)
+@router.delete("/{location_id}", response_model=Message)
 def remove_location(
     location_id: int,
     db: Session = Depends(deps.get_db),
@@ -49,9 +49,11 @@ def remove_location(
             detail="Location with ID:{} does not exist.".format(location_id)
         )
 
-    location_removed = location.remove(db=db, id=location_id)
+    location.remove(db=db, id=location_id)
 
-    return location_removed
+    return Message(
+        message="Successfully deleted the location"
+    )
 
 @router.get("/{location_id}", response_model=LocationResponseInformation)
 def location_details(
