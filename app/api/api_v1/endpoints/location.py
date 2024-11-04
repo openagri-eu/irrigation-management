@@ -18,13 +18,12 @@ def add_location(
     Add a parcel of land to the database (so that the service knows which locations to query for weather info)
     """
 
-    if location_information.state_code is not None:
-        if location_information.country_code.lower() != "us" or location_information.country_code.lower() != "usa":
-            raise HTTPException(
-                status_code=400,
-                detail="Error, can't have state code with non US country, please either input US/USA as country code"
-                       "or remove state code from request."
-            )
+    if location_information.state_code and (location_information.country_code.lower() != "us" and location_information.country_code.lower() != "usa"):
+        raise HTTPException(
+            status_code=400,
+            detail="Error, can't have state code with non US country, please either input US/USA as country code"
+                   "or remove state code from request."
+        )
 
     new_location = location.create(db=db, obj_in=location_information)
 
@@ -56,7 +55,7 @@ def remove_location(
     )
 
 @router.get("/{location_id}", response_model=LocationResponseInformation)
-def location_details(
+def get_location(
     location_id: int,
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_user)
