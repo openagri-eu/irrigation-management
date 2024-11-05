@@ -1,9 +1,12 @@
+import requests
 from fastapi import APIRouter, Depends, HTTPException
+from requests import RequestException
 from sqlalchemy.orm import Session
 
 from api import deps
+from core import settings
 from models import User
-from schemas import NewLocation, LocationResponseInformation, Message
+from schemas import NewLocation, LocationResponseInformation, Message, LocationCreate
 from crud import location
 
 router = APIRouter()
@@ -25,7 +28,63 @@ def add_location(
                    "or remove state code from request."
         )
 
-    new_location = location.create(db=db, obj_in=location_information)
+    if location_information.state_code:
+        try:
+            response = requests.get(
+                url="http://api.openweathermap.org/geo/1.0/direct?q={},{},{}&appid={}".format(location_information.city_name,
+                                                                                              location_information.state_code,
+                                                                                              location_information.country_code,
+                                                                                              settings.OWM_API_KEY)
+            )
+        except RequestException:
+            raise HTTPException(
+                status_code=400,
+                detail="Error during openweathermap API call, their servers might be down, please try again later"
+            )
+    else:
+        try:
+            response = requests.get(
+                url="http://api.openweathermap.org/geo/1.0/direct?q={},{}&appid={}".format(
+                    location_information.city_name,
+                    location_information.country_code,
+                    settings.OWM_API_KEY
+                )
+            )
+        except RequestException:
+            raise HTTPException(
+                status_code=400,
+                detail="Error during openweathermap API call, their servers might be down, please try again later"
+            )
+
+    if (response.status_code / 100) != 2:
+        raise HTTPException(
+            status_code=400,
+            detail="Error when retrieving geo-location data, please check whether the city name or country code is correct"
+        )
+
+    body = response.json()
+
+    if len(body) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, most likely no such location exists on openweathermap, please check whether the city name or country code is correct"
+        )
+
+    crud_location_create_schema = LocationCreate(
+        city_name=location_information.city_name,
+        state_code=location_information.state_code,
+        country_code=location_information.country_code,
+        latitude=body[0]["lat"],
+        longitude=body[0]["lon"]
+    )
+
+    new_location = location.create(db=db, obj_in=crud_location_create_schema)
+
+    if not new_location:
+        raise HTTPException(
+            status_code=400,
+            detail="Error with database during object creation, please try again later"
+        )
 
     return new_location
 

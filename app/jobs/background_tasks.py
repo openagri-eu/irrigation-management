@@ -19,51 +19,13 @@ def get_owm_data():
         session.close()
         return
 
-    lat_lon_values = []
-    for loc in locations:
-        if loc.state_code:
-            try:
-                response = requests.get(
-                    url="http://api.openweathermap.org/geo/1.0/direct?q={},{},{}&appid={}".format(loc.city_name,
-                                                                                                  loc.state_code,
-                                                                                                  loc.country_code,
-                                                                                                  settings.OWM_API_KEY)
-                )
-            except RequestException:
-                continue
-        else:
-            try:
-                response = requests.get(
-                    url="http://api.openweathermap.org/geo/1.0/direct?q={},{}&appid={}".format(
-                        loc.city_name,
-                        loc.country_code,
-                        settings.OWM_API_KEY
-                    )
-                )
-            except RequestException:
-                continue
-
-        if (response.status_code / 100) != 2:
-            continue
-
-        body = response.json()
-
-        if len(body) == 0:
-            continue
-
-        lat_lon_values.append((loc ,body[0]["lat"], body[0]["lon"]))
-
-    if len(lat_lon_values) == 0:
-        session.close()
-        return
-
     weather_info = []
-    for ll in lat_lon_values:
+    for l in locations:
         try:
             response = requests.get(
                 url="https://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&appid={}&units=metric".format(
-                    ll[1],
-                    ll[2],
+                    l.latitude,
+                    l.longitude,
                     settings.OWM_API_KEY
                 )
             )
@@ -85,22 +47,22 @@ def get_owm_data():
             sea_level=body["main"]["sea_level"]
         )
 
-        weather_info.append((ll[0], weather, ll[1], ll[2]))
+        weather_info.append((weather, l.latitude, l.longitude))
 
     eto_calculations = []
 
     for wi in weather_info:
         df_dict = {
-            "T_min": [wi[1].t_min],
-            "T_max": [wi[1].t_max],
-            "T_mean": [wi[1].t_mean],
-            "RH_mean": [wi[1].rh_mean],
-            "U_z": [wi[1].u_z],
-            "P": [wi[1].p]
+            "T_min": [wi[0].t_min],
+            "T_max": [wi[0].t_max],
+            "T_mean": [wi[0].t_mean],
+            "RH_mean": [wi[0].rh_mean],
+            "U_z": [wi[0].u_z],
+            "P": [wi[0].p]
         }
         df = pd.DataFrame(data=df_dict, index=[datetime.datetime.now()])
 
-        eto_obj = ETo(df=df, lat=wi[2], lon=wi[3], freq="D", z_msl=wi[1].sea_level)
+        eto_obj = ETo(df=df, lat=wi[1], lon=wi[2], freq="D", z_msl=wi[0].sea_level)
 
         eto_calculations.append((wi ,eto_obj.eto_fao()))
 
