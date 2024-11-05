@@ -83,7 +83,7 @@ def add_location(
     if not new_location:
         raise HTTPException(
             status_code=400,
-            detail="Error with database during object creation, please try again later"
+            detail="Error, couldn't create location in database due to issue with database"
         )
 
     return new_location
