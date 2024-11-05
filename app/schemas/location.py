@@ -9,10 +9,11 @@ class NewLocation(BaseModel):
     country_code: str
 
 class LocationCreate(NewLocation):
-    pass
+    latitude: float
+    longitude: float
 
 class LocationUpdate(BaseModel):
-    state_code: str
+    pass
 
 class LocationResponseInformation(BaseModel):
     model_config = ConfigDict(from_attributes=True)
