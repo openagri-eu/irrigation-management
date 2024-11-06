@@ -43,7 +43,7 @@ def get_owm_data():
             t_mean=body["main"]["temp"],
             rh_mean=body["main"]["humidity"],
             u_z=body["wind"]["speed"],
-            p=body["main"]["pressure"],
+            p=body["main"]["grnd_level"] / 10, # Divide by 10 because the base value is in hPa and ETo expects kPa
             sea_level=body["main"]["sea_level"]
         )
 
