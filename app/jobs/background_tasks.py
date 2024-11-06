@@ -47,7 +47,23 @@ def get_owm_data():
             sea_level=body["main"]["sea_level"]
         )
 
-        weather_info.append((weather, l.latitude, l.longitude, l.id))
+        # Gather the elevation information for the location
+        # eudem25m is a dataset of topographical data for Europe
+        try:
+            response_otd = requests.get(
+                url="https://api.opentopodata.org/v1/{}?locations={},{}".format("eudem25m", l.latitude, l.longitude)
+            )
+        except RequestException:
+            continue
+
+        if (response_otd.status_code / 100) != 2:
+            continue
+
+        body = response_otd.json()
+
+        z_msl = body["results"][0]["elevation"]
+
+        weather_info.append((weather, l.latitude, l.longitude, l.id, z_msl))
 
     eto_calculations = []
 
@@ -62,7 +78,8 @@ def get_owm_data():
         }
         df = pd.DataFrame(data=df_dict, index=[datetime.datetime.now()])
 
-        eto_obj = ETo(df=df, lat=wi[1], lon=wi[2], freq="D", z_msl=wi[0].sea_level)
+
+        eto_obj = ETo(df=df, lat=wi[1], lon=wi[2], freq="D", z_msl=wi[4], z_u=10)
 
         eto_calculations.append((wi ,eto_obj.eto_fao()))
 
