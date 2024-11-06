@@ -47,7 +47,7 @@ def get_owm_data():
             sea_level=body["main"]["sea_level"]
         )
 
-        weather_info.append((weather, l.latitude, l.longitude))
+        weather_info.append((weather, l.latitude, l.longitude, l.id))
 
     eto_calculations = []
 
@@ -66,15 +66,6 @@ def get_owm_data():
 
         eto_calculations.append((wi ,eto_obj.eto_fao()))
 
-    for c in eto_calculations:
-        eto.create(
-            db=session,
-            obj_in=EtoCreate(
-                date=datetime.date.today(),
-                value=c[1].iloc[0],
-                location_id=c[0][0].id,
-            )
-        )
+    eto.batch_create(db=session, obj_in=[EtoCreate(date=datetime.date.today(), value=c[1].iloc[0], location_id=c[0][3]) for c in eto_calculations])
 
-    session.commit()
     session.close()
