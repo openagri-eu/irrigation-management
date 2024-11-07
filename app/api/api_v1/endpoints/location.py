@@ -28,33 +28,25 @@ def add_location(
                    "or remove state code from request."
         )
 
+    url = "http://api.openweathermap.org/geo/1.0/direct?q={},{}&appid={}".format(
+        location_information.city_name,
+        location_information.country_code,
+        settings.OWM_API_KEY
+    )
+
     if location_information.state_code:
-        try:
-            response = requests.get(
-                url="http://api.openweathermap.org/geo/1.0/direct?q={},{},{}&appid={}".format(location_information.city_name,
-                                                                                              location_information.state_code,
-                                                                                              location_information.country_code,
-                                                                                              settings.OWM_API_KEY)
-            )
-        except RequestException:
-            raise HTTPException(
-                status_code=400,
-                detail="Error during openweathermap API call, their servers might be down, please try again later"
-            )
-    else:
-        try:
-            response = requests.get(
-                url="http://api.openweathermap.org/geo/1.0/direct?q={},{}&appid={}".format(
-                    location_information.city_name,
-                    location_information.country_code,
-                    settings.OWM_API_KEY
-                )
-            )
-        except RequestException:
-            raise HTTPException(
-                status_code=400,
-                detail="Error during openweathermap API call, their servers might be down, please try again later"
-            )
+        url = "http://api.openweathermap.org/geo/1.0/direct?q={},{},{}&appid={}".format(location_information.city_name,
+                                                                                        location_information.state_code,
+                                                                                        location_information.country_code,
+                                                                                        settings.OWM_API_KEY)
+
+    try:
+        response = requests.get(url)
+    except RequestException:
+        raise HTTPException(
+            status_code=400,
+            detail="Error during openweathermap API call, their servers might be down, please try again later"
+        )
 
     if (response.status_code / 100) != 2:
         raise HTTPException(
