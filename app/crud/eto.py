@@ -39,12 +39,12 @@ class CrudEto(CRUDBase[Eto, EtoCreate, EtoUpdate]):
         location_ids = [l[0] for l in db.query(Location.id).filter(Location.id.in_([x.location_id for x in obj_in])).all()]
 
         for obj in obj_in:
-            obj_in_data = obj.model_dump()
-
             # continue instead of db.rollback() because if one locations is removed during the job, due to another
             # api call, doesn't mean the rest of the locations shouldn't have updated eto values
             if obj.location_id not in location_ids:
                 continue
+
+            obj_in_data = obj.model_dump()
 
             db_obj = Eto(**obj_in_data)
             db_objects.append(db_obj)
