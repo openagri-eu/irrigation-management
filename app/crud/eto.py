@@ -36,14 +36,14 @@ class CrudEto(CRUDBase[Eto, EtoCreate, EtoUpdate]):
     def batch_create(self, db: Session, obj_in: List[EtoCreate], **kwargs) -> Optional[List[Eto]]:
         db_objects = []
 
+        locations_db = db.query(Location.id).filter(Location.id.in_([x.location_id for x in obj_in])).all()
+
         for obj in obj_in:
             obj_in_data = obj.model_dump()
 
-            location_db = db.query(Location).filter(Location.id == obj.location_id).first()
-
             # continue instead of db.rollback() because if one locations is removed during the job, due to another
             # api call, doesn't mean the rest of the locations shouldn't have updated eto values
-            if not location_db:
+            if obj.location_id not in locations_db:
                 continue
 
             db_obj = Eto(**obj_in_data)
