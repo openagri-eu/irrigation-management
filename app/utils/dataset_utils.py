@@ -2,9 +2,7 @@ from schemas import Dataset as DatasetScheme
 
 from datetime import datetime
 
-from core import get_settings
-
-settings = get_settings()
+from core import settings
 
 """
 INPUT PARAMETER: dataset: list[DatasetScheme] in functions refers to mapping of .csv file into list of it's rows
