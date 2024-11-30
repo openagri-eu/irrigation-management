@@ -37,9 +37,9 @@ def upgrade() -> None:
     )
     op.create_table('location',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('city_name', sa.String(), nullable=False),
+    sa.Column('city_name', sa.String(), nullable=True),
     sa.Column('state_code', sa.String(), nullable=True),
-    sa.Column('country_code', sa.String(), nullable=False),
+    sa.Column('country_code', sa.String(), nullable=True),
     sa.Column('latitude', sa.Float(), nullable=False),
     sa.Column('longitude', sa.Float(), nullable=False),
     sa.PrimaryKeyConstraint('id'),

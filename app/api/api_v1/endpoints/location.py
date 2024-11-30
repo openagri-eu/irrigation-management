@@ -6,17 +6,17 @@ from sqlalchemy.orm import Session
 from api import deps
 from core import settings
 from models import User
-from schemas import NewLocation, LocationResponseInformation, Message, LocationCreate
+from schemas import NewLocation, LocationResponseInformation, Message, LocationCreate, NewLocationWKT, LocationsDB
 from crud import location
 
 router = APIRouter()
 
-@router.post("/", response_model=LocationResponseInformation)
+@router.post("/", response_model=Message)
 def add_location(
     location_information: NewLocation,
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_user)
-):
+) -> Message:
     """
     Add a parcel of land to the database (so that the service knows which locations to query for weather info)
     """
@@ -63,9 +63,6 @@ def add_location(
         )
 
     crud_location_create_schema = LocationCreate(
-        city_name=location_information.city_name,
-        state_code=location_information.state_code,
-        country_code=location_information.country_code,
         latitude=body[0]["lat"],
         longitude=body[0]["lon"]
     )
@@ -78,7 +75,35 @@ def add_location(
             detail="Error, couldn't create location in database due to issue with database"
         )
 
-    return new_location
+    return Message(message="Successfully created new location!")
+
+@router.post("/parcel-wkt/", response_model=Message)
+def add_location_wkt(
+    location_information: NewLocationWKT,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+) -> Message:
+    """
+    Add a new location based on parcel information (wkt format)
+
+    An example of a parcel represented with wkt:
+    POLYGON ((16.3920614219247 52.2929163540536, 16.3929856171153 52.292695920809, 16.3929856171153 52.292695920809,
+    16.3935334168382 52.2925722551557, 16.3934419208883 52.2875983114338, 16.3898349872649 52.2883588826769 ))
+
+    """
+
+    try:
+        longitude, latitude = location_information.parcel_wkt.split(",")[1].strip(" ").split(" ")
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=400,
+            detail="Error during parse, please check whether the format is correct (should be a wkt polygon)"
+        )
+
+    location.create(db=db, obj_in=LocationCreate(latitude=float(latitude), longitude=float(longitude)))
+
+    return Message(message="Successfully created new location!")
 
 
 @router.delete("/{location_id}", response_model=Message)
@@ -125,3 +150,16 @@ def get_location(
         )
 
     return location_db
+
+@router.get("/", response_model=LocationsDB)
+def get_all(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Get all locations
+    """
+
+    locations = location.get_all(db=db)
+
+    return LocationsDB(locations=locations)
