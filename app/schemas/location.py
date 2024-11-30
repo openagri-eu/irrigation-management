@@ -9,7 +9,7 @@ class NewLocation(BaseModel):
     country_code: str
 
 class NewLocationWKT(BaseModel):
-    parcel_wkt: str
+    coordinates: str
 
 class LocationCreate(BaseModel):
     latitude: float

@@ -93,7 +93,7 @@ def add_location_wkt(
     """
 
     try:
-        longitude, latitude = location_information.parcel_wkt.split(",")[1].strip(" ").split(" ")
+        longitude, latitude = location_information.coordinates.split(",")[1].strip(" ").split(" ")
     except Exception as e:
         print(e)
         raise HTTPException(
