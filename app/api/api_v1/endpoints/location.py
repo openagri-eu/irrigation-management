@@ -89,11 +89,12 @@ def add_location_wkt(
     An example of a parcel represented with wkt:
     POLYGON ((16.3920614219247 52.2929163540536, 16.3929856171153 52.292695920809, 16.3929856171153 52.292695920809,
     16.3935334168382 52.2925722551557, 16.3934419208883 52.2875983114338, 16.3898349872649 52.2883588826769 ))
+    POLYGON ((1 2, 1 2))
 
     """
 
     try:
-        longitude, latitude = location_information.coordinates.split(",")[1].strip(" ").split(" ")
+        longitude, latitude = location_information.coordinates.split(",")[1].strip(" ").strip(")").split(" ")
     except Exception as e:
         print(e)
         raise HTTPException(
