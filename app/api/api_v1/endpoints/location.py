@@ -88,9 +88,7 @@ def add_location_wkt(
 
     An example of a parcel represented with wkt:
     POLYGON ((16.3920614219247 52.2929163540536, 16.3929856171153 52.292695920809, 16.3929856171153 52.292695920809,
-    16.3935334168382 52.2925722551557, 16.3934419208883 52.2875983114338, 16.3898349872649 52.2883588826769 ))
-    POLYGON ((1 2, 1 2))
-
+    16.3935334168382 52.2925722551557, 16.3934419208883 52.2875983114338, 16.3898349872649 52.2883588826769))
     """
 
     try:
@@ -100,6 +98,32 @@ def add_location_wkt(
         raise HTTPException(
             status_code=400,
             detail="Error during parse, please check whether the format is correct (should be a wkt polygon)"
+        )
+
+    # Check whether opentopo returns an elevation
+    try:
+        response_otd = requests.get(
+            url="https://api.opentopodata.org/v1/{}?locations={},{}".format("eudem25m", latitude, longitude)
+        )
+    except RequestException:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, can't check topographical location of wkt parcel, please try again later."
+        )
+
+    if (response_otd.status_code / 100) != 2:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, topographical api issue, please try again later."
+        )
+
+    body = response_otd.json()
+
+    if not body["results"][0]["elevation"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, wkt coordinates do not point to a European location, only European continental parcels "
+                   "are supported currently."
         )
 
     location.create(db=db, obj_in=LocationCreate(latitude=float(latitude), longitude=float(longitude)))
