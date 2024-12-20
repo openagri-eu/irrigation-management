@@ -18,11 +18,11 @@ from utils import (min_max_date, detect_irrigation_events, count_precipitation_e
 router = APIRouter()
 
 @router.get("/")
-def get_all_datasets(
+def get_all_datasets_ids(
         db: Session = Depends(get_db)
 ) -> list[str]:
     db_ids = crud_dataset.get_all_datasets(db)
-    ids = [row.title for row in db_ids.all()]
+    ids = [row.dataset_id for row in db_ids.all()]
     return ids
 
 
