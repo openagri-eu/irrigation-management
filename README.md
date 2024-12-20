@@ -112,6 +112,7 @@ Example response:
 ```
 
 <h3>POST</h3>
+
 ```
 /api/v1/eto/get-calculations/{location_id}
 ```
