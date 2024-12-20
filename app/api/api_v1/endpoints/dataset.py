@@ -17,18 +17,32 @@ from utils import (min_max_date, detect_irrigation_events, count_precipitation_e
 
 router = APIRouter()
 
-
-@router.post("/", response_model=DatasetScheme)
-def load_dataset(
-        dataset: DatasetScheme,
+@router.get("/")
+def get_all_datasets(
         db: Session = Depends(get_db)
-) -> DatasetScheme:
-    return crud_dataset.add_dataset(db, dataset)
+) -> list[str]:
+    db_ids = crud_dataset.get_all_datasets(db)
+    ids = [row.title for row in db_ids.all()]
+    return ids
+
+
+@router.post("/")
+def upload_dataset(
+        dataset: list[DatasetScheme],
+        db: Session = Depends(get_db)
+):
+    try:
+        for data in dataset:
+            crud_dataset.add_dataset(db, data) # Can be faster!
+    except:
+        raise HTTPException(status_code=400, detail="Could not upload dataset")
+
+    return {"status_code": 202, "detail": "Successfully uploaded"}
 
 
 @router.get("/{dataset_id}", response_model=List[DatasetScheme])
 async def get_dataset(
-        dataset_id: int,
+        dataset_id: str,
         db: Session = Depends(get_db)
 ) -> list[DatasetScheme]:
     db_dataset = crud_dataset.get_datasets(db, dataset_id)
@@ -39,7 +53,7 @@ async def get_dataset(
 
 @router.delete("/{dataset_id}")
 def remove_dataset(
-        dataset_id: int,
+        dataset_id: str,
         db: Session = Depends(get_db)
 ):
     try:
@@ -54,7 +68,7 @@ def remove_dataset(
 
 @router.get("/{dataset_id}/analysis", response_model=DatasetAnalysis)
 def analyse_soil_moisture(
-        dataset_id: int,
+        dataset_id: str,
         db: Session = Depends(get_db)
 ) -> DatasetAnalysis:
     dataset: list[DatasetScheme] = crud_dataset.get_datasets(db, dataset_id)

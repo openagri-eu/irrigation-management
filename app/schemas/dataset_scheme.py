@@ -5,7 +5,7 @@ from datetime import datetime
 class Dataset(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    dataset_id: int
+    dataset_id: str
     date: datetime
     soil_moisture_10: float
     soil_moisture_20: float
@@ -19,7 +19,7 @@ class Dataset(BaseModel):
 
 
 class DatasetAnalysis(BaseModel):
-    dataset_id: int
+    dataset_id: str
     time_period: List[datetime]
     irrigation_events_detected: int
     precipitation_events: int
