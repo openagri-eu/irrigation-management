@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, Date
+from sqlalchemy import Column, Integer, Float, Date, String
 
 from db.base_class import Base
 
@@ -7,7 +7,7 @@ class Dataset(Base):
     __tablename__ = "dataset"
 
     id = Column(Integer, primary_key=True)
-    dataset_id = Column(Integer)
+    dataset_id = Column(String)
     date = Column(Date)
     soil_moisture_10 = Column(Float)
     soil_moisture_20 = Column(Float)

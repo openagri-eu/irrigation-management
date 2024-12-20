@@ -28,6 +28,8 @@ class CrudDataset(CRUDBase[DM, DS, dict]):
     def get_datasets(self, db: Session, dataset_id: int):
         return db.query(DM).filter(DM.dataset_id == dataset_id).all()
 
+    def get_all_datasets(self, db: Session):
+        return db.query(DM.dataset_id.distinct().label("dataset_id"))
 
     def delete_datasets(self, db: Session, dataset_id:int):
         deleted = db.query(DM).filter_by(dataset_id=dataset_id).delete()
