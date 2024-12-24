@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.orm import Session
 
-from api.deps import get_db
+from api.deps import get_db, get_current_user
+from models import User
 from schemas import DatasetAnalysis
 from schemas import Dataset as DatasetScheme
 from crud import dataset as crud_dataset
@@ -19,7 +20,8 @@ router = APIRouter()
 
 @router.get("/")
 def get_all_datasets_ids(
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user)
 ) -> list[str]:
     db_ids = crud_dataset.get_all_datasets(db)
     ids = [row.dataset_id for row in db_ids.all()]
@@ -29,7 +31,8 @@ def get_all_datasets_ids(
 @router.post("/")
 def upload_dataset(
         dataset: list[DatasetScheme],
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user)
 ):
     try:
         for data in dataset:
@@ -43,7 +46,8 @@ def upload_dataset(
 @router.get("/{dataset_id}", response_model=List[DatasetScheme])
 async def get_dataset(
         dataset_id: str,
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user)
 ) -> list[DatasetScheme]:
     db_dataset = crud_dataset.get_datasets(db, dataset_id)
     if not db_dataset:
@@ -54,7 +58,8 @@ async def get_dataset(
 @router.delete("/{dataset_id}")
 def remove_dataset(
         dataset_id: str,
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user)
 ):
     try:
         deleted = crud_dataset.delete_datasets(db, dataset_id)
@@ -69,7 +74,8 @@ def remove_dataset(
 @router.get("/{dataset_id}/analysis/", response_model=DatasetAnalysis)
 def analyse_soil_moisture(
         dataset_id: str,
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user)
 ) -> DatasetAnalysis:
     dataset: list[DatasetScheme] = crud_dataset.get_datasets(db, dataset_id)
 
