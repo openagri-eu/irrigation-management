@@ -1,0 +1,39 @@
+services:
+  db:
+    hostname: ${POSTGRES_HOST}
+    image: postgres:16.3
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGPORT: ${POSTGRES_PORT}
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      start_period: 10s
+      retries: 3
+      interval: 360s
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+    image: ghcr.io/openagri-eu/irrigation-management:latest
+    build: .
+    command: /code/entrypoint.sh ${SERVICE_PORT}
+    ports:
+      - ${SERVICE_PORT}:${SERVICE_PORT}
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      ACCESS_TOKEN_EXPIRATION_TIME: ${ACCESS_TOKEN_EXPIRATION_TIME}
+      JWT_KEY: ${JWT_KEY}
+      SERVICE_PORT: ${SERVICE_PORT}
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS}
+      USING_GATEKEEPER: ${USING_GATEKEEPER}
+      GATEKEEPER_BASE_URL: ${GATEKEEPER_BASE_URL}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      GATEKEEPER_USERNAME: ${GATEKEEPER_USERNAME}
+      GATEKEEPER_PASSWORD: ${GATEKEEPER_PASSWORD}
+      SERVICE_NAME: ${SERVICE_NAME}

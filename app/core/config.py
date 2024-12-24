@@ -7,7 +7,7 @@ from os import path, environ
 
 
 class Settings(BaseSettings):
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = None
 
     PROJECT_ROOT: str = path.dirname(path.dirname(path.realpath(__file__)))
 
@@ -52,6 +52,13 @@ class Settings(BaseSettings):
     INCREASE_THRESHOLD: float
     HIGH_DOSE_THRESHOLD: float
     SATURATION_THRESHOLD: float
+
+    # Gatekeeper info
+    USING_GATEKEEPER: bool
+    GATEKEEPER_BASE_URL: Optional[AnyHttpUrl] = None
+    GATEKEEPER_USERNAME: str
+    GATEKEEPER_PASSWORD: str
+    SERVICE_NAME: str
 
 
 settings = Settings()
