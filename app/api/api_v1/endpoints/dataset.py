@@ -66,7 +66,7 @@ def remove_dataset(
     return {"status_code":201, "detail": "Successfully deleted"}
 
 
-@router.get("/{dataset_id}/analysis", response_model=DatasetAnalysis)
+@router.get("/{dataset_id}/analysis/", response_model=DatasetAnalysis)
 def analyse_soil_moisture(
         dataset_id: str,
         db: Session = Depends(get_db)

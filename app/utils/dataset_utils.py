@@ -200,7 +200,7 @@ def calculate_field_capacity(dataset: list[DatasetScheme]):
 Similar to previous one, but this time we check if values in the Map data structure are below 25%.
 """
 def calculate_stress_level(field_capacity_values):
-    stress_level_tuples = [(depth, f"{float(value[:-1]) * 0.25}") for depth, value in field_capacity_values]
+    stress_level_tuples = [(depth, f"{float(value) * 0.25}") for depth, value in field_capacity_values]
 
     return stress_level_tuples
 
@@ -212,7 +212,7 @@ With the given threshold we get number of saturation days in the field.
 def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values):
     number_of_saturation_days = 0
 
-    field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
+    field_capacity_dict = {depth: float(value) / 100 for depth, value in field_capacity_values}
 
     saturation_threshold = settings.SATURATION_THRESHOLD
 
@@ -234,7 +234,7 @@ Same as previous one, only this time it return list of dates when such an events
 def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values):
     saturation_days = []
 
-    field_capacity_dict = {depth: float(value[:-1]) / 100 for depth, value in field_capacity_values}
+    field_capacity_dict = {depth: float(value) / 100 for depth, value in field_capacity_values}
 
     saturation_threshold = settings.SATURATION_THRESHOLD
 
