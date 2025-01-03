@@ -60,5 +60,8 @@ class Settings(BaseSettings):
     GATEKEEPER_PASSWORD: str
     SERVICE_NAME: str
 
+    # Frontend
+    USING_FRONTEND: bool
+
 
 settings = Settings()

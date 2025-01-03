@@ -14,6 +14,8 @@ from utils import (min_max_date, detect_irrigation_events, count_precipitation_e
                    calculate_stress_level, get_stress_count, get_stress_dates,
                    no_of_saturation_days, get_saturation_dates)
 
+from core.config import settings
+
 
 
 router = APIRouter()
@@ -49,10 +51,17 @@ async def get_dataset(
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user)
 ) -> list[DatasetScheme]:
+
     db_dataset = crud_dataset.get_datasets(db, dataset_id)
     if not db_dataset:
         raise HTTPException(status_code=404, detail="No datasets with that id")
-    return db_dataset
+
+    if settings.USING_FRONTEND:
+
+        return db_dataset
+    else:
+        #TODO: Add JSON-LD
+        pass
 
 
 @router.delete("/{dataset_id}")
@@ -101,4 +110,8 @@ def analyse_soil_moisture(
 
     )
 
-    return result
+    if settings.USING_FRONTEND:
+        return result
+    else:
+        #TODO: Add JSON-LD
+        pass
