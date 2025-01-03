@@ -7,6 +7,8 @@ import crud
 from models import User
 from schemas import EToRequest, EToResponse
 
+from core.config import settings
+
 
 router = APIRouter()
 
@@ -36,11 +38,16 @@ def get_calculations(
             detail="Error, location with ID:{} does not exist.".format(location_id)
         )
 
-    return EToResponse(
-        calculations=crud.eto.get_calculations(
-            db=db,
-            from_date=er.from_date,
-            to_date=er.to_date,
-            location_id=location_id
+    if settings.USING_FRONTEND:
+
+        return EToResponse(
+            calculations=crud.eto.get_calculations(
+                db=db,
+                from_date=er.from_date,
+                to_date=er.to_date,
+                location_id=location_id
+            )
         )
-    )
+    else:
+        #TODO: Add JSON-LD
+        pass
