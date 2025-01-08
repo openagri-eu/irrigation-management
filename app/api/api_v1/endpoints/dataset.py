@@ -14,8 +14,9 @@ from utils import (min_max_date, detect_irrigation_events, count_precipitation_e
                    calculate_stress_level, get_stress_count, get_stress_dates,
                    no_of_saturation_days, get_saturation_dates)
 
-from core.config import settings
+from utils import jsonld_get_dataset, jsonld_analyse_soil_moisture
 
+from core.config import settings
 
 
 router = APIRouter()
@@ -60,8 +61,9 @@ async def get_dataset(
 
         return db_dataset
     else:
-        #TODO: Add JSON-LD
-        pass
+
+        jsonld_db_dataset = jsonld_get_dataset(db_dataset)
+        return jsonld_db_dataset
 
 
 @router.delete("/{dataset_id}")
@@ -113,5 +115,6 @@ def analyse_soil_moisture(
     if settings.USING_FRONTEND:
         return result
     else:
-        #TODO: Add JSON-LD
-        pass
+
+        jsonld_analysis = jsonld_analyse_soil_moisture(result)
+        return jsonld_analysis
