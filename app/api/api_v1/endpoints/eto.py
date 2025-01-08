@@ -6,6 +6,7 @@ import crud
 
 from models import User
 from schemas import EToRequest, EToResponse
+from utils import jsonld_eto_response
 
 from core.config import settings
 
@@ -38,9 +39,7 @@ def get_calculations(
             detail="Error, location with ID:{} does not exist.".format(location_id)
         )
 
-    if settings.USING_FRONTEND:
-
-        return EToResponse(
+    eto_response = EToResponse(
             calculations=crud.eto.get_calculations(
                 db=db,
                 from_date=er.from_date,
@@ -48,6 +47,10 @@ def get_calculations(
                 location_id=location_id
             )
         )
+
+    if settings.USING_FRONTEND:
+
+        return eto_response
     else:
-        #TODO: Add JSON-LD
-        pass
+        jsonld_response = jsonld_eto_response(eto_response)
+        return jsonld_response
