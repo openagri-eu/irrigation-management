@@ -45,7 +45,7 @@ def detect_irrigation_events(dataset: list[DatasetScheme]):
                          curr.soil_moisture_40 + curr.soil_moisture_50 + curr.soil_moisture_60) / 6
 
         if moisture is None or (
-                abs(curr_moisture - moisture) / moisture <= const_threshold and prev.rain == 0):
+                moisture != 0 and abs(curr_moisture - moisture) / moisture <= const_threshold and prev.rain == 0):
             if start_index is None:
                 start_index = i - 1
             moisture = prev_moisture
