@@ -1,8 +1,8 @@
 import utils
 import uuid
-from schemas import DatasetScheme, DatasetAnalysis, EToResponse
+from schemas import Dataset, DatasetAnalysis, EToResponse
 
-def jsonld_get_dataset(dataset: list[DatasetScheme]):
+def jsonld_get_dataset(dataset: list[Dataset]):
     context = utils.context
     graph = []
 

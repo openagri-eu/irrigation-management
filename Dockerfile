@@ -31,4 +31,4 @@ COPY . /code
 
 COPY entrypoint.sh /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/entrypoint.sh 8008
+RUN chmod +x /usr/local/bin/entrypoint.sh
