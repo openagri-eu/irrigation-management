@@ -46,12 +46,12 @@ def upload_dataset(
     return {"status_code": 202, "detail": "Successfully uploaded"}
 
 
-@router.get("/{dataset_id}", response_model=List[DatasetScheme])
+@router.get("/{dataset_id}")
 async def get_dataset(
         dataset_id: str,
         db: Session = Depends(deps.get_db),
         user: User = Depends(deps.get_current_user)
-) -> list[DatasetScheme]:
+):
 
     db_dataset = crud_dataset.get_datasets(db, dataset_id)
     if not db_dataset:
@@ -82,12 +82,12 @@ def remove_dataset(
     return {"status_code":201, "detail": "Successfully deleted"}
 
 
-@router.get("/{dataset_id}/analysis/", response_model=DatasetAnalysis)
+@router.get("/{dataset_id}/analysis/")
 def analyse_soil_moisture(
         dataset_id: str,
         db: Session = Depends(deps.get_db),
         user: User = Depends(deps.get_current_user)
-) -> DatasetAnalysis:
+):
     dataset: list[DatasetScheme] = crud_dataset.get_datasets(db, dataset_id)
 
     if not dataset:
