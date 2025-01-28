@@ -165,9 +165,12 @@ def calculate_field_capacity(dataset: list[DatasetScheme]):
         10: None,
         20: None,
         30: None,
-        40: None
+        40: None,
+        50: None,
+        60: None
     }
 
+    print(field_capacity.keys())
     for i in range(len(sorted_dataset)):
         curr = sorted_dataset[i]
 
@@ -176,12 +179,29 @@ def calculate_field_capacity(dataset: list[DatasetScheme]):
                 next_itt = sorted_dataset[j]
 
                 if next_itt.rain > 0:
+                    if field_capacity[10] is None:
+                        field_capacity[10] = curr.soil_moisture_10
+                    if field_capacity[20] is None:
+                        field_capacity[20] = curr.soil_moisture_20
+                    if field_capacity[30] is None:
+                        field_capacity[30] = curr.soil_moisture_30
+                    if field_capacity[40] is None:
+                        field_capacity[40] = curr.soil_moisture_40
+                    if field_capacity[50] is None:
+                        field_capacity[50] = curr.soil_moisture_50
+                    if field_capacity[60] is None:
+                        field_capacity[60] = curr.soil_moisture_60
+
                     break
 
                 moisture_10 = next_itt.soil_moisture_10
                 moisture_20 = next_itt.soil_moisture_20
                 moisture_30 = next_itt.soil_moisture_30
                 moisture_40 = next_itt.soil_moisture_40
+                moisture_50 = next_itt.soil_moisture_50
+                moisture_60 = next_itt.soil_moisture_60
+
+
 
                 if field_capacity[10] is None or moisture_10 > field_capacity[10]:
                     field_capacity[10] = moisture_10
@@ -191,8 +211,13 @@ def calculate_field_capacity(dataset: list[DatasetScheme]):
                     field_capacity[30] = moisture_30
                 if field_capacity[40] is None or moisture_40 > field_capacity[40]:
                     field_capacity[40] = moisture_40
+                if field_capacity[50] is None or moisture_50 > field_capacity[50]:
+                    field_capacity[50] = moisture_50
+                if field_capacity[60] is None or moisture_60 > field_capacity[60]:
+                    field_capacity[60] = moisture_60
 
     field_capacity_tuples = [(depth, value) for depth, value in field_capacity.items() if value is not None]
+
 
     return field_capacity_tuples
 
@@ -215,6 +240,14 @@ def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values):
     field_capacity_dict = {depth: float(value) / 100 for depth, value in field_capacity_values}
 
     saturation_threshold = settings.SATURATION_THRESHOLD
+
+    print(len(field_capacity_dict.values())) # 0
+    print(field_capacity_values) # []
+    print(type(field_capacity_values)) # <class 'list'>
+    print(len(field_capacity_values)) # 0
+
+    for elem in field_capacity_dict.values():
+        print(elem)
 
     for day in dataset:
         if (day.soil_moisture_10 >= field_capacity_dict[10] * saturation_threshold or
@@ -242,7 +275,9 @@ def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values):
         if (day.soil_moisture_10 >= field_capacity_dict[10] * saturation_threshold or
                 day.soil_moisture_20 >= field_capacity_dict[20] * saturation_threshold or
                 day.soil_moisture_30 >= field_capacity_dict[30] * saturation_threshold or
-                day.soil_moisture_40 >= field_capacity_dict[40] * saturation_threshold):
+                day.soil_moisture_40 >= field_capacity_dict[40] * saturation_threshold or
+                day.soil_moisture_50 >= field_capacity_dict[50] * saturation_threshold or
+                day.soil_moisture_60 >= field_capacity_dict[50] * saturation_threshold):
             saturation_days.append(day.date)
 
     return saturation_days
