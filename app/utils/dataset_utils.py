@@ -170,7 +170,16 @@ def calculate_field_capacity(dataset: list[DatasetScheme]):
         60: None
     }
 
-    print(field_capacity.keys())
+    # Making sure dict is not "empty"
+    first_element = sorted_dataset[0]
+    field_capacity[10] = first_element.soil_moisture_10
+    field_capacity[20] = first_element.soil_moisture_20
+    field_capacity[30] = first_element.soil_moisture_30
+    field_capacity[40] = first_element.soil_moisture_40
+    field_capacity[50] = first_element.soil_moisture_50
+    field_capacity[60] = first_element.soil_moisture_60
+
+
     for i in range(len(sorted_dataset)):
         curr = sorted_dataset[i]
 
@@ -179,19 +188,6 @@ def calculate_field_capacity(dataset: list[DatasetScheme]):
                 next_itt = sorted_dataset[j]
 
                 if next_itt.rain > 0:
-                    if field_capacity[10] is None:
-                        field_capacity[10] = curr.soil_moisture_10
-                    if field_capacity[20] is None:
-                        field_capacity[20] = curr.soil_moisture_20
-                    if field_capacity[30] is None:
-                        field_capacity[30] = curr.soil_moisture_30
-                    if field_capacity[40] is None:
-                        field_capacity[40] = curr.soil_moisture_40
-                    if field_capacity[50] is None:
-                        field_capacity[50] = curr.soil_moisture_50
-                    if field_capacity[60] is None:
-                        field_capacity[60] = curr.soil_moisture_60
-
                     break
 
                 moisture_10 = next_itt.soil_moisture_10
@@ -241,19 +237,14 @@ def no_of_saturation_days(dataset: list[DatasetScheme], field_capacity_values):
 
     saturation_threshold = settings.SATURATION_THRESHOLD
 
-    print(len(field_capacity_dict.values())) # 0
-    print(field_capacity_values) # []
-    print(type(field_capacity_values)) # <class 'list'>
-    print(len(field_capacity_values)) # 0
-
-    for elem in field_capacity_dict.values():
-        print(elem)
 
     for day in dataset:
         if (day.soil_moisture_10 >= field_capacity_dict[10] * saturation_threshold or
                 day.soil_moisture_20 >= field_capacity_dict[20] * saturation_threshold or
                 day.soil_moisture_30 >= field_capacity_dict[30] * saturation_threshold or
-                day.soil_moisture_40 >= field_capacity_dict[40] * saturation_threshold):
+                day.soil_moisture_40 >= field_capacity_dict[40] * saturation_threshold or
+                day.soil_moisture_50 >= field_capacity_dict[50] * saturation_threshold or
+                day.soil_moisture_60 >= field_capacity_dict[60] * saturation_threshold):
             number_of_saturation_days +=1
 
     return number_of_saturation_days
@@ -277,7 +268,7 @@ def get_saturation_dates(dataset: list[DatasetScheme], field_capacity_values):
                 day.soil_moisture_30 >= field_capacity_dict[30] * saturation_threshold or
                 day.soil_moisture_40 >= field_capacity_dict[40] * saturation_threshold or
                 day.soil_moisture_50 >= field_capacity_dict[50] * saturation_threshold or
-                day.soil_moisture_60 >= field_capacity_dict[50] * saturation_threshold):
+                day.soil_moisture_60 >= field_capacity_dict[60] * saturation_threshold):
             saturation_days.append(day.date)
 
     return saturation_days
@@ -295,7 +286,9 @@ def get_stress_count(dataset: list[DatasetScheme], stress_level: list[[int, floa
         if (day.soil_moisture_10 < stress_level_dict.get(10, float('inf')) or
                 day.soil_moisture_20 < stress_level_dict.get(20, float('inf')) or
                 day.soil_moisture_30 < stress_level_dict.get(30, float('inf')) or
-                day.soil_moisture_40 < stress_level_dict.get(40, float('inf'))):
+                day.soil_moisture_40 < stress_level_dict.get(40, float('inf')) or
+                day.soil_moisture_50 < stress_level_dict.get(50, float('inf')) or
+                day.soil_moisture_60 < stress_level_dict.get(60, float('inf'))):
             stress_ret += 1
 
     return stress_ret
@@ -312,7 +305,9 @@ def get_stress_dates(dataset: list[DatasetScheme], stress_level: list[[int, floa
         if (day.soil_moisture_10 < stress_level_dict.get(10, float('inf')) or
                 day.soil_moisture_20 < stress_level_dict.get(20, float('inf')) or
                 day.soil_moisture_30 < stress_level_dict.get(30, float('inf')) or
-                day.soil_moisture_40 < stress_level_dict.get(40, float('inf'))):
+                day.soil_moisture_40 < stress_level_dict.get(40, float('inf')) or
+                day.soil_moisture_50 < stress_level_dict.get(50, float('inf')) or
+                day.soil_moisture_60 < stress_level_dict.get(60, float('inf'))):
             stress_dates.append(day.date)
 
     return stress_dates
