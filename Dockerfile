@@ -1,8 +1,8 @@
 FROM python:3.11
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 ENV PIP_VERSION_TO_INSTALL="24.0"
 
@@ -31,4 +31,4 @@ COPY . /code
 
 COPY entrypoint.sh /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/entrypoint.sh 8008
+RUN chmod +x /usr/local/bin/entrypoint.sh
