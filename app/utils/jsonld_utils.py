@@ -161,12 +161,12 @@ def jsonld_analyse_soil_moisture(analysis: DatasetAnalysis):
         jsonld_field_capacity.append({
             "@id": "urn:openagri:field:capacity:{}".format(uuid4_temp),
             "@type": "QuantityValue",
-            "numericValue": fc(1),
+            "numericValue": fc[1],
             "unit": "om:Percentage",
             "atDepth": {
-                "@id": "urn:openagri:depth:{}".format(fc(0)),
+                "@id": "urn:openagri:depth:{}".format(fc[0]),
                 "@type": "Measure",
-                "hasNumericValue": "{}".format(fc(0)),
+                "hasNumericValue": "{}".format(fc[0]),
                 "hasUnit": "om:centimetre"
             }
         })
@@ -178,12 +178,12 @@ def jsonld_analyse_soil_moisture(analysis: DatasetAnalysis):
         jsonld_stress_level.append({
             "@id": "urn:openagri:stress:level:{}".format(uuid4_temp),
             "@type": "QuantityValue",
-            "numericValue": sl(1),
+            "numericValue": sl[1],
             "unit": "om:Percentage",
             "atDepth": {
-                "@id": "urn:openagri:depth:{}".format(sl(0)),
+                "@id": "urn:openagri:depth:{}".format(sl[0]),
                 "@type": "Measure",
-                "hasNumericValue": "{}".format(sl(0)),
+                "hasNumericValue": "{}".format(sl[0]),
                 "hasUnit": "om:centimetre"
             }
         })

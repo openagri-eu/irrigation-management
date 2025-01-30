@@ -15,10 +15,9 @@ Check issue #7: https://github.com/openagri-eu/irrigation-management/issues/7
 Return time period covered.
 """
 def min_max_date(dataset: list[DatasetScheme]) -> [datetime, datetime]:
-    min_date = min(dataset, key=lambda d: d.date)
-    max_date = max(dataset, key=lambda d: d.date)
-    return [min_date, max_date]
-
+    min_dateset = min(dataset, key=lambda d: d.date)
+    max_dateset = max(dataset, key=lambda d: d.date)
+    return [min_dateset.date, max_dateset.date]
 
 """
 With two thresholds we detect irrigation events.
