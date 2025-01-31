@@ -25,7 +25,7 @@ class DatasetAnalysis(BaseModel):
     precipitation_events: int
     high_dose_irrigation_events: int
     high_dose_irrigation_events_dates: List[datetime]
-    field_capacity: List[Tuple[int, int]]
+    field_capacity: List[Tuple[int, float]]
     stress_level: List[Tuple[int, float]]
     number_of_saturation_days: int
     saturation_dates: List[datetime]
