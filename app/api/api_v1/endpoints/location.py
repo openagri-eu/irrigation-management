@@ -1,6 +1,7 @@
 import requests
 from fastapi import APIRouter, Depends, HTTPException
 from requests import RequestException
+from shapely import wkt, errors
 from sqlalchemy.orm import Session
 
 from api import deps
@@ -87,22 +88,25 @@ def add_location_wkt(
     Add a new location based on parcel information (wkt format)
 
     An example of a parcel represented with wkt:
-    POLYGON ((16.3920614219247 52.2929163540536, 16.3929856171153 52.292695920809, 16.3929856171153 52.292695920809,
-    16.3935334168382 52.2925722551557, 16.3934419208883 52.2875983114338, 16.3898349872649 52.2883588826769))
+    POLYGON ((40.2 21.2, 40.3 21.3, 40.5 25.2, 36.1 23.1, 40.2 21.2))
     """
 
     try:
-        longitude, latitude = location_information.coordinates.split(",")[1].strip(" ").strip(")").split(" ")
-    except Exception:
+        base_geometry = wkt.loads(location_information.coordinates)
+    except errors.ShapelyError as se:
         raise HTTPException(
             status_code=400,
-            detail="Error during parse, please check whether the format is correct (should be a wkt polygon)"
+            detail="Error during WKT parsing, please check format, floats,"
+                   " that it encompasses a closed structure. Specific exception information: [{}]".format(se)
         )
+
+    c_latitude = base_geometry.centroid.x
+    c_longitude = base_geometry.centroid.y
 
     # Check whether opentopo returns an elevation
     try:
         response_otd = requests.get(
-            url="https://api.opentopodata.org/v1/{}?locations={},{}".format("eudem25m", latitude, longitude)
+            url="https://api.opentopodata.org/v1/{}?locations={},{}".format("eudem25m", c_latitude, c_longitude)
         )
     except RequestException:
         raise HTTPException(
@@ -143,7 +147,7 @@ def add_location_wkt(
                    "are supported currently."
         )
 
-    location.create(db=db, obj_in=LocationCreate(latitude=float(latitude), longitude=float(longitude)))
+    location.create(db=db, obj_in=LocationCreate(latitude=float(c_latitude), longitude=float(c_longitude)))
 
     return Message(message="Successfully created new location!")
 
