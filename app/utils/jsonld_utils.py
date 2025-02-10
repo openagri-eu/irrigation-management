@@ -281,4 +281,5 @@ def jsonld_eto_response(eto: EToResponse):
         "@context": context,
         "@graph": graph
     }
+
     return doc

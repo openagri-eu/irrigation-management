@@ -93,8 +93,7 @@ def add_location_wkt(
 
     try:
         longitude, latitude = location_information.coordinates.split(",")[1].strip(" ").strip(")").split(" ")
-    except Exception as e:
-        print(e)
+    except Exception:
         raise HTTPException(
             status_code=400,
             detail="Error during parse, please check whether the format is correct (should be a wkt polygon)"
@@ -118,6 +117,24 @@ def add_location_wkt(
         )
 
     body = response_otd.json()
+
+    if "results" not in body:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, topographical api failed to return a result, please try again later."
+        )
+
+    if len(body["results"]) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, topographical api returned an empty results set, please try again later."
+        )
+
+    if "elevation" not in body["results"][0]:
+        raise HTTPException(
+            status_code=400,
+            detail="Error, elevation data missing from topographical api call, please try again later."
+        )
 
     if not body["results"][0]["elevation"]:
         raise HTTPException(
