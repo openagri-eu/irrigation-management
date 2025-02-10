@@ -145,48 +145,150 @@ Response example:
 
 Now that you've added a couple of locations to the service, you can request ETo calculations from it using the following API:
 
-<h3>POST</h3>
+<h3>GET</h3>
 
 ```
-/api/v1/eto/get-calculations/{location_id}
+/api/v1/eto/get-calculations/{location_id}/from/{from_date}/to/{to_date}
 ```
 
 Path parameters:
 1. location_id: the location id for which you want to get the calculated ETo values.
-
-Request Body:
-
-```json
-{
-  "from_date": "2024-09-20",
-  "to_date": "2024-09-28"
-}
-```
+2. from_date: start date (inclusive)
+3. to_date: end date (inclusive)
 
 Response example:
 
 ```json
 {
-  "calculations": [
+  "@context": [
+    "https://w3id.org/ocsm/main-context.jsonld"
+  ],
+  "@graph": [
     {
-      "date": "2024-09-20",
-      "value": 6.5
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
     },
     {
-      "date": "2024-09-21",
-      "value": 6.6
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
     },
     {
-      "date": "2024-09-22",
-      "value": 6.8
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
     },
     {
-      "date": "2024-09-23",
-      "value": 6.7
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
     },
     {
-      "date": "2024-09-24",
-      "value": 5.4
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
+    },
+    {
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
     }
   ]
 }
