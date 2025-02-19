@@ -4,11 +4,6 @@ from typing import List
 from pydantic import BaseModel, ConfigDict
 
 
-class EToRequest(BaseModel):
-    from_date: datetime.date
-    to_date: datetime.date
-
-
 class Calculation(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -17,7 +12,7 @@ class Calculation(BaseModel):
 
 
 class EToResponse(BaseModel):
-    calculations: List[Calculation] = []
+    calculations: List[Calculation]
 
 
 

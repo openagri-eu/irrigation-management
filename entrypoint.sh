@@ -38,19 +38,6 @@ sed -i -e "s/PGU/${POSTGRES_USER}/g" -e "s/PGP/${POSTGRES_PASSWORD}/g" -e "s/PGH
 echo "Starting db migrations"
 
 alembic upgrade head
-#exit_code=$?
-#count=0
-#
-#while [[ "${exit_code}" -ne 0 && "${count}" -lt 5 ]]
-#do
-#  count=$((count+1))
-#  echo "${count}"
-#
-#  alembic upgrade head
-#
-#  exit_code=$?
-#  sleep 2
-#done
 
 echo "Finished db migrations"
 

@@ -2,8 +2,10 @@
 
 # Description
 
-The Irrigation service provides information via It's APIs, either in the form of \
-ETo (Reference evapotranspiration) calculations or soil moisture analysis.
+The OpenAgri Irrigation service provides the calculation of referent evapotranspiration (ETo) as well as the analysis of \
+the soil moisture of parcels/plots of land. \
+These functionalities can be used via the REST APIs, which provide these them in a linked data format (using JSON-LD). \
+This service conforms to the OpenAgri Common Semantic Model (OCSM).
 
 # Requirements
 
@@ -40,33 +42,46 @@ The application will be served on http://127.0.0.1:80 (I.E. typing localhost/doc
 
 # Documentation
 
-Examples:
+# ETO
 
-<h3>GET</h3>
+The service provides ETo calculations for different parcels/locations. \
+In order to do this, the service requires one or more locations to be added. \
+You can add locations via the following two APIs:
+
+<h3>POST</h3>
 
 ```
-/api/v1/location/{location_id}
+/api/v1/location/parcel-wkt/
+
+/api/v1/location/
 ```
 
-Example response:
+The APIs differ in their request bodies, the /parcel-wkt/ api expects a WKT compliant polygon that represents a parcel's geometry.
+
+The /api/v1/location/ API expects the name of the place where the parcel is located, and the country that it's in. \
+This API is more of a quality of life one, if a parcel/location is close to a town/village.
+
+<h3>POST</h3>
+
+```
+/api/v1/location/parcel-wkt/
+```
+
+Request body:
 
 ```json
 {
-    "id": 1,
-    "city_name": "Paris",
-    "state_code": null,
-    "country_code": "FR"
+  "coordinates": "POLYGON ((16.3918171754758 52.2845776020972, 16.3917494080095 52.2846027134549, 16.3919900323056 52.2850299561796, 16.3924263252882 52.2858045976875, 16.3927582118358 52.286390756684, 16.3930886652367 52.2869743680154, 16.3934208097949 52.28756094944, 16.3934419208883 52.2875983114338, 16.3937337853878 52.2881148407101, 16.3939318041838 52.2884652785805, 16.3941551608466 52.2888605503256, 16.3943586084041 52.2892205826293, 16.3945934888104 52.289636232648, 16.3949241041235 52.2902212836039, 16.3952566311392 52.2908072644052, 16.3955894075119 52.2913936684795, 16.395923637163 52.2919826173955, 16.395949403074 52.2920280190259, 16.4002575057698 52.2910810251215, 16.3988093546172 52.2891372236252, 16.3998210258441 52.2889828598088, 16.399192306522 52.2877635138971, 16.39905146601 52.2875627085851, 16.3989201005977 52.2873703982278, 16.3976834611891 52.2859014266173, 16.3974738832239 52.2857876393351, 16.3922772878688 52.2846333456815, 16.3918171754758 52.2845776020972))"
 }
 ```
 
-If a state from the USA was added:
+You can read more about the WKT format [here](https://libgeos.org/specifications/wkt/). \
+A polygon is expected here, since farms/parcels/plots of land are very often divided into irregular geometric shapes.
 
+Response example:
 ```json
 {
-    "id": 1,
-    "city_name": "Paris",
-    "state_code": "Texas",
-    "country_code": "USA"
+  "message": "Successfully created new location!"
 }
 ```
 
@@ -76,26 +91,214 @@ If a state from the USA was added:
 /api/v1/location/
 ```
 
-Input JSON:
+Request body:
 
 ```json
 {
-    "city_name": "Paris",
-    "state_code": "Texas",
-    "country_code": "USA"
+  "city_name": "Belgrade",
+  "country_code": "RS"
 }
 ```
 
-or
+The country_code should be the ISO country code of the country (either 2 or 3 characters). \
+The city names can be in any language, for example in Serbian, "Београд" would work here as well.
+
+Response example:
+```json
+{
+  "message": "Successfully created new location!"
+}
+```
+
+When you've added a couple of locations, you can view them using the following API:
+
+<h3>GET</h3>
+
+```
+/api/v1/location/
+```
+
+Request body: None
+
+Response example:
 
 ```json
 {
-    "city_name": "Paris",
-    "country_code": "FR"
+  "locations": [
+    {
+      "id": 1,
+      "latitude": 12.234543,
+      "longitude": 56.123453,
+      "city_name": null,
+      "country_code": null
+    },
+    {
+      "id": 2,
+      "latitude": 37.074448,
+      "longitude": 22.430241,
+      "city_name": "Sparti",
+      "country_code": "GR"
+    }
+  ]
 }
 ```
 
-Example response: Same as above
+Now that you've added a couple of locations to the service, you can request ETo calculations from it using the following API:
+
+<h3>GET</h3>
+
+```
+/api/v1/eto/get-calculations/{location_id}/from/{from_date}/to/{to_date}
+```
+
+Path parameters:
+1. location_id: the location id for which you want to get the calculated ETo values.
+2. from_date: start date (inclusive)
+3. to_date: end date (inclusive)
+
+Response example:
+
+```json
+{
+  "@context": [
+    "https://w3id.org/ocsm/main-context.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
+    },
+    {
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
+    },
+    {
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
+    },
+    {
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
+    },
+    {
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
+    },
+    {
+      "@id": "urn:openagri:evaporation:calculation:652337ea-0c08-467d-a9f4-2a0699e97b23",
+      "@type": "Observation",
+      "description": "Measurement or calculation of the evaporation of the soil on a parcel on a specific date",
+      "resultTime": "2025-02-10",
+      "observedProperty": {
+        "@id": "urn:openagri:evaporation:op:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "ObservableProperty",
+          "Evaporation"
+        ]
+      },
+      "hasFeatureOfInterest": {
+        "@id": "urn:openagri:soil:foi:652337ea-0c08-467d-a9f4-2a0699e97b23",
+        "@type": [
+          "FeatureOfInterest",
+          "Soil"
+        ]
+      },
+      "hasSimpleResult": "2.43"
+    }
+  ]
+}
+```
+
+The values are represented in millimetres per day of evapotranspiration. \
+The system generates these values according to weather data that is collected through the openweathermap API. \
+This data is collected each day at around midnight. \
+
+You can also remove a location, alongside it's calculated ETo values using the following API:
 
 <h3>DELETE</h3>
 
@@ -103,7 +306,12 @@ Example response: Same as above
 /api/v1/location/{location_id}
 ```
 
-Example response:
+Path parameters:
+1. location_id: the id of the location you want to remove.
+
+Request body: None
+
+Response example:
 
 ```json
 {
@@ -111,46 +319,7 @@ Example response:
 }
 ```
 
-<h3>POST</h3>
-
-```
-/api/v1/eto/get-calculations/{location_id}
-```
-
-Input JSON:
-
-```json
-{
-    "from_date": "2024-10-25",
-    "to_date": "2024-11-01"
-}
-```
-
-Example response:
-
-```json
-{
-    "calculations": [
-        {
-            "date": "2020-10-25",
-            "value": 6.55
-        },
-        {
-            "date": "2020-10-24",
-            "value": 6.45
-        },
-        {
-            "date": "2020-10-23",
-            "value": 6.52
-        },
-        {
-            "date": "2020-10-22",
-            "value": 5.87
-        }
-    ]
-}
-```
-Values represent the calculated ETo values, which are represented in mm/day or millimetres per day
+# SOIL MOISTURE
 
 <h3>GET/DELETE</h3>
 
@@ -272,15 +441,12 @@ Example response:
 }
 ```
 
-<h3>Example usage for the ETo:</h3>
+<h3>Quick start for the ETo:</h3>
 
-A user would input the location of their parcel/plot of land via the POST /api/v1/location/ API (or multiple parcels). \
+A user would input the location of their parcel/plot of land via the POST /api/v1/location/ or POST /api/v1/location/parcel-wkt/ APIs (or multiple parcels). \
 The system requests weather data for these locations at around midnight every day. \
 Once a user wishes to view ETo values, they may call the POST /api/v1/eto/get-calculations/{location_id} API. \
 This API will return a list of calculations, for the given days.
-
-Currently, because the service only starts collecting data once it has been deployed, it is not possible to \
-query for ETo values for days before it has been deployed. 
 
 <h3>Example usage for the soil moisture analysis:</h3>
 

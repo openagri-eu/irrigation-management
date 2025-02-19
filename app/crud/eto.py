@@ -31,7 +31,7 @@ class CrudEto(CRUDBase[Eto, EtoCreate, EtoUpdate]):
         return db_obj
 
     def get_calculations(self, db: Session, from_date:datetime.date, to_date: datetime.date, location_id: int):
-        return db.query(Eto).filter(Eto.location_id == location_id, Eto.date > from_date, Eto.date < to_date).order_by(desc(Eto.date)).all()
+        return db.query(Eto).filter(Eto.location_id == location_id, Eto.date >= from_date, Eto.date <= to_date).order_by(desc(Eto.date)).all()
 
     def batch_create(self, db: Session, obj_in: List[EtoCreate], **kwargs) -> Optional[List[Eto]]:
         db_objects = []

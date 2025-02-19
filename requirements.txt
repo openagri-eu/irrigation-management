@@ -11,3 +11,4 @@ passlib==1.7.4 # For password managment
 argon2_cffi==23.1.0 # Backend for Argon encryption
 pandas==2.2.3 # Don't update to 3.0.0 because the ETo lib will stop working
 python-dotenv==1.0.1
+shapely==2.0.6

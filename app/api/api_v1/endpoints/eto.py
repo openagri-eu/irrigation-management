@@ -1,3 +1,5 @@
+import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -5,7 +7,7 @@ from api import deps
 import crud
 
 from models import User
-from schemas import EToRequest, EToResponse
+from schemas import EToResponse
 from utils import jsonld_eto_response
 
 from core.config import settings
@@ -14,10 +16,11 @@ from core.config import settings
 router = APIRouter()
 
 
-@router.post("/get-calculations/{location_id}", response_model=EToResponse)
+@router.get("/get-calculations/{location_id}/from/{from_date}/to/{to_date}")
 def get_calculations(
     location_id: int,
-    er: EToRequest,
+    from_date: datetime.date,
+    to_date: datetime.date,
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_user)
 ):
@@ -25,7 +28,7 @@ def get_calculations(
     Returns ETo calculations for the requested days
     """
 
-    if er.from_date > er.to_date:
+    if from_date > to_date:
         raise HTTPException(
             status_code=400,
             detail="Error, from date can't be later than to date"
@@ -42,14 +45,13 @@ def get_calculations(
     eto_response = EToResponse(
             calculations=crud.eto.get_calculations(
                 db=db,
-                from_date=er.from_date,
-                to_date=er.to_date,
+                from_date=from_date,
+                to_date=to_date,
                 location_id=location_id
             )
         )
 
     if settings.USING_FRONTEND:
-
         return eto_response
     else:
         jsonld_response = jsonld_eto_response(eto_response)
