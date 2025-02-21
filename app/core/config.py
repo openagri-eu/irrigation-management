@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     HIGH_DOSE_THRESHOLD: float
     SATURATION_THRESHOLD: float
 
+    SERVICE_PORT: int
+    JWT_ALGORITHM: str
+
     # Gatekeeper info
     USING_GATEKEEPER: bool
     GATEKEEPER_BASE_URL: Optional[AnyHttpUrl] = None
