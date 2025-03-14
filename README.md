@@ -41,7 +41,7 @@ docker compose up
 # A list of APIs
 A full list of APIs can be viewed [here](https://editor-next.swagger.io/?url=https://gist.githubusercontent.com/vlf-stefan-drobic/bf78e620b5a9c5ea22498fd26edb70e5/raw/b0133afe634660791da12af93d251658e08e834f/gistfile1.txt).
 
-For a more detailed view of the APIs, read API.md.
+For a more detailed view of the APIs, read [API.md](https://github.com/openagri-eu/irrigation-management/blob/main/API.md).
 
 <h3>Quick start for the ETo:</h3>
 
