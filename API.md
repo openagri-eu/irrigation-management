@@ -290,7 +290,7 @@ Example responses for GET and DELETE respectively:
 ```json
 [
   {
-    "dataset_id": 23,
+    "dataset_id": "dataset_name",
     "date": "2024-10-17T13:18:05.054Z",
     "soil_moisture_10": 7.3,
     "soil_moisture_20": 2.4,
@@ -322,7 +322,7 @@ Input JSON:
 
 ```json
 {
-   "dataset_id": 23,
+   "dataset_id": "dataset_name",
    "date": "2024-10-17T13:18:05.054Z",
    "soil_moisture_10": 7.3,
    "soil_moisture_20": 2.4,
@@ -343,7 +343,7 @@ Input JSON:
 Example response:
 ```json
 {
-  "dataset_id": 23,
+  "dataset_id": "dataset_name",
   "date": "2024-10-17T13:18:05.054Z",
   "soil_moisture_10": 7.3,
   "soil_moisture_20": 2.4,
@@ -366,7 +366,7 @@ Example response:
 Example response:
 ```json
 {
-  "dataset_id": 23,
+  "dataset_id": "dataset_name",
   "time_period": [
     "2024-10-17T13:24:35.198Z", "2024-10-19T13:24:35.198Z"
   ],
