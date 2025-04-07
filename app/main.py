@@ -15,7 +15,8 @@ from jobs.background_tasks import get_owm_data
 
 @asynccontextmanager
 async def lifespan(fa: FastAPI):
-    scheduler.add_job(get_owm_data, 'cron', day_of_week='*', hour=22, minute=0, second=0)
+    # scheduler.add_job(get_owm_data, 'cron', day_of_week='*', hour=22, minute=0, second=0)
+    scheduler.add_job(get_owm_data, 'interval', seconds=20)
     scheduler.start()
     if settings.USING_GATEKEEPER:
         register_apis_to_gatekeeper()
