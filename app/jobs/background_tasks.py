@@ -9,7 +9,7 @@ import db.session
 import requests
 import pandas as pd
 
-def get_owm_data():
+def get_weather_data():
     session = db.session.SessionLocal()
 
     locations = session.query(Location).all()
