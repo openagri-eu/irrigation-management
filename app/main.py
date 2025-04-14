@@ -12,6 +12,9 @@ from init.init_gatekeeper import register_apis_to_gatekeeper
 
 from jobs.background_tasks import get_weather_data
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
 
 @asynccontextmanager
 async def lifespan(fa: FastAPI):
@@ -26,12 +29,19 @@ app = FastAPI(
     title="Irrigation Management", openapi_url="/api/v1/openapi.json", lifespan=lifespan
 )
 
+
+
+# # Serve index.html for the root route
+# @app.get("/")
+# def serve_index():
+#     return FileResponse("/static/index.html")
+
+
 jobstores = {
     'default': MemoryJobStore()
 }
 
 scheduler = AsyncIOScheduler(jobstores=jobstores)
-
 
 
 if settings.CORS_ORIGINS:
@@ -44,3 +54,7 @@ if settings.CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix="/api/v1")
+
+
+# Serve static assets (JS, CSS, images)
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
