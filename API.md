@@ -4,20 +4,7 @@
 
 The service provides ETo calculations for different parcels/locations. \
 In order to do this, the service requires one or more locations to be added. \
-You can add locations via the following two APIs:
-
-<h3>POST</h3>
-
-```
-/api/v1/location/parcel-wkt/
-
-/api/v1/location/
-```
-
-The APIs differ in their request bodies, the /parcel-wkt/ api expects a WKT compliant polygon that represents a parcel's geometry.
-
-The /api/v1/location/ API expects the name of the place where the parcel is located, and the country that it's in. \
-This API is more of a quality of life one, if a parcel/location is close to a town/village.
+You can add locations via the following API:
 
 <h3>POST</h3>
 
@@ -42,33 +29,6 @@ Response example:
   "message": "Successfully created new location!"
 }
 ```
-
-<h3>POST</h3>
-
-```
-/api/v1/location/
-```
-
-Request body:
-
-```json
-{
-  "city_name": "Belgrade",
-  "country_code": "RS"
-}
-```
-
-The country_code should be the ISO country code of the country (either 2 or 3 characters). \
-The city names can be in any language, for example in Serbian, "Београд" would work here as well.
-
-Response example:
-```json
-{
-  "message": "Successfully created new location!"
-}
-```
-
-When you've added a couple of locations, you can view them using the following API:
 
 <h3>GET</h3>
 
