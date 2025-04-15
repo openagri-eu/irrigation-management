@@ -39,7 +39,7 @@ docker compose up
 ```
 
 # A List of APIs
-A full list of APIs can be viewed [here](https://editor-next.swagger.io/?url=https://gist.githubusercontent.com/vlf-stefan-drobic/bf78e620b5a9c5ea22498fd26edb70e5/raw/b0133afe634660791da12af93d251658e08e834f/gistfile1.txt).
+A full list of APIs can be viewed [here](https://editor-next.swagger.io/?url=https://gist.githubusercontent.com/vlf-stefan-drobic/1f58277bf816eda4eb383791351901e3/raw/14530a5eb4ae939434b2367d25b9c6b28b613e84/gistfile1.txt).
 
 For a more detailed view of the APIs, checkout [API.md](API.md).
 

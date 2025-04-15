@@ -1,6 +1,5 @@
 from eto import ETo
 from requests import RequestException
-from core import settings
 from models import Location
 from schemas import EToInputData, EtoCreate
 from crud import eto
@@ -10,7 +9,7 @@ import db.session
 import requests
 import pandas as pd
 
-def get_owm_data():
+def get_weather_data():
     session = db.session.SessionLocal()
 
     locations = session.query(Location).all()
@@ -23,11 +22,12 @@ def get_owm_data():
     for l in locations:
         try:
             response = requests.get(
-                url="https://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&appid={}&units=metric".format(
+                url="https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&daily=temperature_2m_max,"
+                    "temperature_2m_mean,relative_humidity_2m_mean,pressure_msl_mean,surface_pressure_mean,"
+                    "wind_speed_10m_mean,temperature_2m_min&timezone=auto&past_days=1&forecast_days=1".format(
                     l.latitude,
-                    l.longitude,
-                    settings.OWM_API_KEY
-                )
+                    l.longitude),
+                timeout=120
             )
         except RequestException:
             continue
@@ -37,33 +37,21 @@ def get_owm_data():
 
         body = response.json()
 
-        weather = EToInputData(
-            t_min=body["main"]["temp_min"],
-            t_max=body["main"]["temp_max"],
-            t_mean=body["main"]["temp"],
-            rh_mean=body["main"]["humidity"],
-            u_z=body["wind"]["speed"],
-            p=body["main"]["grnd_level"] / 10, # Divide by 10 because the base value is in hPa and ETo expects kPa
-            sea_level=body["main"]["sea_level"]
-        )
-
-        # Gather the elevation information for the location
-        # eudem25m is a dataset of topographical data for Europe
+        # Attempt to extract information
         try:
-            response_otd = requests.get(
-                url="https://api.opentopodata.org/v1/{}?locations={},{}".format("eudem25m", l.latitude, l.longitude)
+            weather = EToInputData(
+                t_min=body["daily"]["temperature_2m_min"][1],
+                t_max=body["daily"]["temperature_2m_max"][1],
+                t_mean=body["daily"]["temperature_2m_mean"][1],
+                rh_mean=body["daily"]["relative_humidity_2m_mean"][1],
+                u_z=body["daily"]["wind_speed_10m_mean"][1],
+                p=body["daily"]["surface_pressure_mean"][1] / 10,
+                sea_level=int(body["daily"]["pressure_msl_mean"][1])
             )
-        except RequestException:
+        except Exception:
             continue
 
-        if (response_otd.status_code / 100) != 2:
-            continue
-
-        body = response_otd.json()
-
-        z_msl = body["results"][0]["elevation"]
-
-        weather_info.append((weather, l.latitude, l.longitude, l.id, z_msl))
+        weather_info.append((weather, l.latitude, l.longitude, l.id, body["elevation"]))
 
     eto_calculations = []
 
@@ -78,10 +66,9 @@ def get_owm_data():
         }
         df = pd.DataFrame(data=df_dict, index=[datetime.datetime.now()])
 
-
         eto_obj = ETo(df=df, lat=wi[1], lon=wi[2], freq="D", z_msl=wi[4], z_u=10)
 
-        eto_calculations.append((wi ,eto_obj.eto_fao()))
+        eto_calculations.append((wi, eto_obj.eto_fao()))
 
     eto.batch_create(db=session, obj_in=[EtoCreate(date=datetime.date.today(), value=c[1].iloc[0], location_id=c[0][3]) for c in eto_calculations])
 

@@ -46,8 +46,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRATION_TIME: int
     JWT_KEY: str
 
-    OWM_API_KEY: str
-
     CONST_THRESHOLD: float
     INCREASE_THRESHOLD: float
     HIGH_DOSE_THRESHOLD: float
