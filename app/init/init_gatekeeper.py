@@ -8,10 +8,12 @@ from api.api_v1.endpoints import dataset, eto, location
 def register_apis_to_gatekeeper():
 
     at = requests.post(
-        url=settings.GATEKEEPER_BASE_URL.unicode_string() + "api/login/",
+        url=str(settings.GATEKEEPER_BASE_URL) + "/api/login/",
         headers={"Content-Type": "application/json"},
-        json={"username": "{}".format(settings.GATEKEEPER_USERNAME),
-              "password": "{}".format(settings.GATEKEEPER_PASSWORD)}
+        json={
+            "username": "{}".format(settings.GATEKEEPER_USERNAME),
+            "password": "{}".format(settings.GATEKEEPER_PASSWORD)
+        }
     )
 
     temp = at.json()
@@ -31,10 +33,10 @@ def register_apis_to_gatekeeper():
     for api in apis_to_register.routes:
 
         requests.post(
-            url=settings.GATEKEEPER_BASE_URL.unicode_string() + "api/register_service/",
+            url=str(settings.GATEKEEPER_BASE_URL) + "/api/register_service/",
             headers={"Content-Type": "application/json", "Authorization" : "Bearer {}".format(access)},
             json={
-                "base_url": "{}:{}".format(settings.SERVICE_NAME, settings.SERVICE_PORT),
+                "base_url": "http://{}:{}/".format(settings.SERVICE_NAME, settings.SERVICE_PORT),
                 "service_name": settings.SERVICE_NAME,
                 "endpoint": "api/v1/" + api.path.strip("/"),
                 "methods": list(api.methods)
@@ -43,7 +45,7 @@ def register_apis_to_gatekeeper():
 
 
     requests.post(
-        url=settings.GATEKEEPER_BASE_URL.unicode_string() + "api/logout/",
+        url=str(settings.GATEKEEPER_BASE_URL) + "/api/logout/",
         headers={"Content-Type": "application/json"},
         json={"refresh": refresh}
     )
