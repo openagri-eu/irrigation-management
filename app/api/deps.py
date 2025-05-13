@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from pydantic import ValidationError
+from requests import RequestException
 from sqlalchemy.orm import Session
 
 from models import User
@@ -30,17 +31,24 @@ def get_current_user(
         db: Session = Depends(get_db),
         token: str = Depends(reusable_oauth2)
 ) -> User:
-    if settings.USING_GATEKEEPER:
-        response = requests.post(
-            url=settings.GATEKEEPER_BASE_URL.unicode_string() + "api/validate_token/",
-            headers={"Content-Type": "application/json"},
-            json={"token": token, "token_type": "access"}
-        )
 
-        if response.status_code == 400:
+    if settings.USING_GATEKEEPER:
+        try:
+            response = requests.post(
+                url=str(settings.GATEKEEPER_BASE_URL) + "/api/validate_token/",
+                headers={"Content-Type": "application/json"},
+                json={"token": token, "token_type": "access"}
+            )
+        except RequestException:
             raise HTTPException(
                 status_code=400,
-                detail="Error, bad jwt token."
+                detail="Error, can't connect to gatekeeper instance."
+            )
+
+        if response.status_code / 100 != 2:
+            raise HTTPException(
+                status_code=400,
+                detail="Error, issues with gatekeeper when attempting to fetch access token."
             )
 
         return User(email=token)

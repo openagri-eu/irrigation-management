@@ -12,7 +12,7 @@ services:
       start_period: 10s
       retries: 3
       interval: 360s
-  backend:
+  irrigation:
     depends_on:
       db:
         condition: service_healthy
