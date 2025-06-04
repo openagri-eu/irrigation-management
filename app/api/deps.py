@@ -28,28 +28,6 @@ def get_db() -> Generator:
         db.close()
 
 
-# def get_token(
-#         token: str = Depends(reusable_oauth2)
-# ) -> str:
-#     if settings.USING_GATEKEEPER:
-#         try:
-#             response = requests.post(
-#                 url=str(settings.GATEKEEPER_BASE_URL) + "/api/validate_token/",
-#                 headers={"Content-Type": "application/json"},
-#                 json={"token": token, "token_type": "access"}
-#             )
-#         except RequestException:
-#             raise HTTPException(
-#                 status_code=400,
-#                 detail="Error, can't connect to gatekeeper instance"
-#             )
-#
-#         if response.status_code / 100 != 2:
-#             raise HTTPException(
-#                 status_code=400,
-#                 detail="Error, issues with gatekeeper when attempting to fetch access token"
-#             )
-
 def get_jwt(
         token: Token = Depends(reusable_oauth2)
 ):
